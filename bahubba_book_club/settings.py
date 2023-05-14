@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'book_club',
 ]
 
 MIDDLEWARE = [
@@ -89,6 +90,10 @@ DATABASES = {
         'PORT': env('DB_PORT'),
     }
 }
+
+
+# Custom User Model (Reader)
+AUTH_USER_MODEL = 'book_club.Reader'
 
 
 # Password validation
