@@ -5,6 +5,8 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.utils import timezone
 
+from book_club.managers import ReaderManager
+
 
 # TODO - Create custom user manager
 # TODO - Customize authorization (groups, roles in groups) - May not need to override Django auth for more high-level app functions
@@ -35,6 +37,8 @@ class Reader(AbstractBaseUser, PermissionsMixin):
         'given_name',
         'surname',
     ]
+
+    objects = ReaderManager()
 
     def __str__(self):
         return self.username
