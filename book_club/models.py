@@ -35,8 +35,6 @@ class Reader(AbstractBaseUser, PermissionsMixin):
     EMAIL_FIELD = 'email'
     REQUIRED_FIELDS = [
         'email',
-        'given_name',
-        'surname',
     ]
 
     objects = ReaderManager()

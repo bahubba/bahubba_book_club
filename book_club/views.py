@@ -1,6 +1,6 @@
 from django.db import IntegrityError
 from django.shortcuts import render
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import authenticate, login, logout
 
 from .models import Reader
@@ -12,7 +12,7 @@ def register_user(req):
     """
 
     # TODO - Probably need custom form...
-    return_dict = {'form': UserCreationForm()}
+    return_dict = {}
 
     # Create user on POST
     if req.method == 'POST':
