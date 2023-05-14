@@ -11,7 +11,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     # Book Club Administration
     # Book Clubs
-    path('signup/', views.signup_user, name='signup'),
+    path('register/', views.register_user, name='register'),
     path('login/', views.login_user, name='login'),
     # Readers
     # Authors

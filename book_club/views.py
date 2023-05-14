@@ -6,9 +6,9 @@ from django.contrib.auth import authenticate, login, logout
 from .models import Reader
 
 
-def signup_user(req):
+def register_user(req):
     """
-    Reader (User) signup view and POST
+    Reader (User) register view and POST
     """
 
     # TODO - Probably need custom form...
@@ -33,8 +33,8 @@ def signup_user(req):
         else:
             return_dict['error'] = 'Passwords do not match'
 
-    # Default to assuming GET functionality; Render the signup page
-    return render(req, 'book_club/signup_user.html', return_dict)
+    # Default to assuming GET functionality; Render the register page
+    return render(req, 'book_club/register_user.html', return_dict)
 
 
 def login_user(req):
