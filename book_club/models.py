@@ -9,7 +9,8 @@ from book_club.managers import ReaderManager
 
 
 # TODO - Create custom user manager
-# TODO - Customize authorization (groups, roles in groups) - May not need to override Django auth for more high-level app functions
+# TODO - Customize authorization (groups, roles in groups)
+#        May not need to override Django auth for more high-level app functions
 # TODO - Finish adding other DB entities
 
 
@@ -20,9 +21,9 @@ class Reader(AbstractBaseUser, PermissionsMixin):
     )
     username = models.CharField(max_length=50, unique=True, null=False)
     is_staff = models.BooleanField(default=False)
-    given_name = models.CharField(max_length=50, null=False)
+    given_name = models.CharField(max_length=50, null=True)
     middle_name = models.CharField(max_length=100, null=True)
-    surname = models.CharField(max_length=50, null=False)
+    surname = models.CharField(max_length=50, null=True)
     suffix = models.CharField(max_length=15, null=True)
     title = models.CharField(max_length=15, null=True)
     email = models.EmailField(unique=True, null=False)

@@ -21,3 +21,11 @@ body {
 .main-container {
   padding-top: 2em;
 }
+
+.nav-link {
+  color: $light
+}
+
+.text-muted {
+  color: #708090ad !important; // Bootstrap marks this as important themselves...
+}

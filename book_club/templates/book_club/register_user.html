@@ -1,45 +1,48 @@
 {% extends "book_club/base.html" %} {% block content %}
 <div class="row justify-content-center mt-5">
-  <div class="col-md-6">
+  <div class="col-md-8">
     <h2>Register</h2>
+        <small id="usernameHelp" class="form-text text-muted">
+            <span class="text-danger">*</span> = required
+        </small>
   </div>
 </div>
 <div class="row justify-content-center mt-3">
-  <div class="col-md-6">
+  <div class="col-md-8">
     {% if error %}
     <div class="alert alert-danger" role="alert">{{ error }}</div>
     {% endif %}
     <form method="POST">
       {% csrf_token %}
-      <div class="form-group">
-        <label for="username">Username</label>
+      <div class="form-group mb-2">
+        <label for="username">Username <span class="text-danger">*</span></label>
         <input
           type="text"
           name="username"
           class="form-control"
           id="username"
           aria-describedby="usernameHelp"
+          required
         />
-        <small id="usernameHelp" class="form-text text-muted"
-          >Your username must be unique. We'll let you know if someone has taken
-          it already.</small
-        >
+        <small id="usernameHelp" class="form-text text-muted">
+            Your username must be unique. We'll let you know if someone has taken it already.
+        </small>
       </div>
-      <div class="form-group">
-        <label for="email">Email</label>
+      <div class="form-group mb-2">
+        <label for="email">Email <span class="text-danger">*</span></label>
         <input
           type="text"
           name="email"
           class="form-control"
           id="email"
           aria-describedby="emailHelp"
+          required
         />
-        <small id="emailHelp" class="form-text text-muted"
-          >Your email must be unique. We'll let you know if someone has taken it
-          already.</small
-        >
+        <small id="emailHelp" class="form-text text-muted">
+            Your email must be unique. We'll let you know if someone has taken it already.
+        </small>
       </div>
-      <div class="form-group">
+      <div class="form-group mb-2">
         <label for="given_name">First Name</label>
         <input
           type="text"
@@ -48,26 +51,28 @@
           class="form-control"
         />
       </div>
-      <div class="form-group">
+      <div class="form-group mb-2">
         <label for="surname">Last Name</label>
         <input type="text" name="surname" id="surname" class="form-control" />
       </div>
-      <div class="form-group">
-        <label for="password1">Password</label>
+      <div class="form-group mb-2">
+        <label for="password1">Password <span class="text-danger">*</span></label>
         <input
           type="password"
           name="password1"
           class="form-control"
           id="password1"
+          required
         />
       </div>
       <div class="form-group">
-        <label for="password2">Confirm Password</label>
+        <label for="password2">Confirm Password <span class="text-danger">*</span></label>
         <input
           type="password"
           name="password2"
           class="form-control"
           id="password2"
+          required
         />
       </div>
       <button type="submit" class="btn btn-primary mt-2">Register</button>

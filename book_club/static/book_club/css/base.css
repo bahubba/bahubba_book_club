@@ -12260,3 +12260,11 @@ body {
 .main-container {
   padding-top: 2em;
 }
+
+.nav-link {
+  color: #f8f9fa;
+}
+
+.text-muted {
+  color: #708090ad !important;
+}
