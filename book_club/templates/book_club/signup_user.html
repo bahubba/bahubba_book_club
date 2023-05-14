@@ -1,11 +1,11 @@
 {% extends "book_club/base.html" %} {% block content %}
 <div class="row justify-content-center mt-5">
-  <div class="col-md-5">
+  <div class="col-md-6">
     <h2>Sign Up</h2>
   </div>
 </div>
-<div class="row justify-content-center mt-5">
-  <div class="col-md-5">
+<div class="row justify-content-center mt-3">
+  <div class="col-md-6">
     {% if error %}
     <div class="alert alert-danger" role="alert">{{ error }}</div>
     {% endif %}
@@ -70,11 +70,11 @@
           id="password2"
         />
       </div>
-      <button type="submit" class="btn btn-primary">Sign Up</button>
+      <button type="submit" class="btn btn-primary mt-2">Sign Up</button>
     </form>
     <hr />
     <div class="text-center">
-      Do you already have an account? <a href="{% url 'login' %}">Login here</a>
+      Do you already have an account? <a href="{% url 'login' %}">Login</a> here
     </div>
   </div>
 </div>

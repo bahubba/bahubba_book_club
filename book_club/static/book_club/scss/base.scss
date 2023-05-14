@@ -1,3 +1,17 @@
+@import 'book_club/bootstrap/scss/_functions';
+@import 'book_club/bootstrap/scss/_variables';
+
+$primary: $green;
+$secondary: $yellow;
+
+$theme-colors: map-merge(
+  $theme-colors,
+  (
+    'primary': $primary,
+    'secondary': $secondary,
+  )
+);
+
 @import 'book_club/bootstrap/scss/bootstrap';
 
 body {
