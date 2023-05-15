@@ -18,6 +18,7 @@ urlpatterns = [
     path('logout/', views.logout_reader, name='logout'),
 
     # Book Clubs
+    path('', views.home, name='home'),
     path('book-clubs/', include('book_club.urls')),
 
     # Readers

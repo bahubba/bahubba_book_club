@@ -25,9 +25,7 @@ def register_reader(req):
                 )
                 reader.save()
                 login(req, reader)
-
-                # TODO - Redirect to home page once implemented
-                # return redirect('home')
+                return redirect('home')
             except IntegrityError:
                 return_dict['error'] = 'Username or email has already been taken'
 
@@ -59,9 +57,7 @@ def login_reader(req):
             return_dict['error'] = 'Username or password incorrect'
         else:
             login(req, reader)
-
-            # TODO - Redirect to home page once implemented
-            # return redirect('home')
+            return redirect('home')
 
     # Default to assuming GET functionality
 
@@ -76,6 +72,11 @@ def logout_reader(req):
     if req.method == 'POST':
         logout(req)
         return redirect('login')
+
+
+@login_required
+def home(req):
+    return render(req, 'book_club/home.html')
 
 
 @login_required
