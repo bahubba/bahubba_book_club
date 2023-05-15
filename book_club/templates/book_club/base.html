@@ -32,7 +32,7 @@
   <body>
     <nav class="navbar navbar-expand-md navbar-light fixed-top bg-primary">
       <div class="container">
-        <a class="navbar-brand" href="{% url 'login' %}">
+        <a class="navbar-brand" href="{% url 'home' %}">
           <img
             src="{% static 'book_club/favicon/favicon.ico' %}"
             width="30"
@@ -53,19 +53,15 @@
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
-          {% if user.is_authenticated %}
           <ul class="navbar-nav mr-auto">
+          {% if user.is_authenticated %}
             <li class="nav-item {{ book_clubs }}">
-              <a class="nav-link" href="{% url 'book_club:book_clubs' %}">Groups</a>
+              <a class="nav-link" href="{% url 'book_club:book_clubs' %}">My Clubs</a>
             </li>
-          </ul>
-          {% endif %}
-          <ul class="navbar-nav ml-auto">
-            {% if user.is_authenticated %}
             <li class="nav-item">
-              <a href="#" onclick="$('#signOutBtn').click()" class="nav-link"
-                >Logout</a
-              >
+              <a href="#" onclick="$('#signOutBtn').click()" class="nav-link">
+                  Logout
+              </a>
               <form
                 style="display: none"
                 method="POST"
@@ -93,6 +89,8 @@
     </div>
 
     <!-- Optional JavaScript -->
+    <!-- jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
     <!-- Bootstrap JS -->
     <script src="{% static 'book_club/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
   </body>
