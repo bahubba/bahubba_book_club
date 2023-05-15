@@ -1,12 +1,13 @@
 from django.db import IntegrityError
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 
 from .models import Reader
 
 
-def register_user(req):
+def register_reader(req):
     """
     Reader (User) register view and POST
     """
@@ -33,11 +34,15 @@ def register_user(req):
         else:
             return_dict['error'] = 'Passwords do not match'
 
-    # Default to assuming GET functionality; Render the register page
-    return render(req, 'book_club/register_user.html', return_dict)
+    # Default to assuming GET functionality
+
+    # If already logged in, redirect
+
+    # Otherwise render the register page
+    return render(req, 'book_club/register_reader.html', return_dict)
 
 
-def login_user(req):
+def login_reader(req):
     """
     Login view and POST
     """
@@ -58,5 +63,29 @@ def login_user(req):
             # TODO - Redirect to home page once implemented
             # return redirect('home')
 
-    # Default to assuming GET functionality; Render the login page
-    return render(req, 'book_club/login_user.html', return_dict)
+    # Default to assuming GET functionality
+
+    # If already logged in, redirect
+
+    # Otherwise render the login page
+    return render(req, 'book_club/login_reader.html', return_dict)
+
+
+@login_required
+def logout_reader(req):
+    if req.method == 'POST':
+        logout(req)
+        return redirect('login')
+
+
+@login_required
+def book_clubs(req):
+    """
+    View with readers' book clubs
+    """
+
+    # Pull the groups the reader is a member of
+    reader_clubs = req.user.book_clubs.all()
+    return_dict = {'book_clubs': reader_clubs, 'in_clubs': len(reader_clubs) > 0}
+
+    return render(req, 'book_club/book_clubs.html', return_dict)
