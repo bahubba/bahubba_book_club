@@ -27,7 +27,7 @@
     <!-- Base CSS -->
     <link rel="stylesheet" href="{% static 'book_club/css/base.css' %}" />
 
-    <title>BAHubba Book Club</title>
+    <title>BAHubba Book Club Manager</title>
   </head>
   <body>
     <nav class="navbar navbar-expand-md navbar-light fixed-top bg-primary">
@@ -39,7 +39,7 @@
             height="30"
             class="d-inline-block align-top"
           />
-          <span class="text-secondary">BAHubba Book Club</span>
+          <span class="text-secondary">BAHubba Book Club Manager</span>
         </a>
         <button
           class="navbar-toggler"
@@ -55,14 +55,8 @@
         <div class="collapse navbar-collapse" id="navbarNav">
           {% if user.is_authenticated %}
           <ul class="navbar-nav mr-auto">
-            <li class="nav-item {{ current }}">
-              <a class="nav-link" href="{% url 'current' %}">Current</a>
-            </li>
-            <li class="nav-item {{ completed }}">
-              <a class="nav-link" href="{% url 'completed' %}">Completed</a>
-            </li>
-            <li class="nav-item {{ create }}">
-              <a class="nav-link" href="{% url 'create' %}">Create</a>
+            <li class="nav-item {{ book_clubs }}">
+              <a class="nav-link" href="{% url 'book_club:book_clubs' %}">Groups</a>
             </li>
           </ul>
           {% endif %}
