@@ -10,7 +10,7 @@
             {% if in_clubs %}
                 <ul>
                     {% for book_club in book_clubs %}
-                        <li>{{ book_club.name }}</li>
+                        <li><a href="{% url 'book_club:book_club_home' book_club.name %}">{{ book_club.name }}</a></li>
                     {% endfor %}
                 </ul>
             {% else %}

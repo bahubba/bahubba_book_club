@@ -6,5 +6,6 @@ app_name = 'book_club'
 
 urlpatterns = [
     path('', views.book_clubs, name='book_clubs'),
-    path('create', views.create_book_club, name='create_book_club')
+    path('create', views.create_book_club, name='create_book_club'),
+    path('<str:book_club_name>/', views.book_club_home, name='book_club_home'),
 ]
