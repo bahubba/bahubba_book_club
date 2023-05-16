@@ -14,16 +14,6 @@ from book_club.managers import ReaderManager
 # TODO - Finish adding other DB entities
 
 
-# Book Clubs
-class BookClub(models.Model):
-    id = models.UUIDField(
-        primary_key=True, default=uuid.uuid4, editable=False, null=False
-    )
-    name = models.CharField(max_length=100, null=False, unique=True)
-    created = models.DateTimeField(default=timezone.now)
-    disbanded = models.DateTimeField(null=True, blank=True)
-
-
 # Readers (Book Club Members) - THESE ARE THE USERS
 class Reader(AbstractBaseUser, PermissionsMixin):
     id = models.UUIDField(
@@ -40,7 +30,6 @@ class Reader(AbstractBaseUser, PermissionsMixin):
     joined = models.DateTimeField(default=timezone.now)
     left = models.DateTimeField(null=True, blank=True)
     is_active = models.BooleanField(default=True)
-    book_clubs = models.ManyToManyField(BookClub)
 
     USERNAME_FIELD = 'username'
     EMAIL_FIELD = 'email'
@@ -52,6 +41,17 @@ class Reader(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.username
+
+
+# Book Clubs
+class BookClub(models.Model):
+    id = models.UUIDField(
+        primary_key=True, default=uuid.uuid4, editable=False, null=False
+    )
+    name = models.CharField(max_length=100, null=False, unique=True)
+    created = models.DateTimeField(default=timezone.now)
+    disbanded = models.DateTimeField(null=True, blank=True)
+    readers = models.ManyToManyField(Reader)
 
 
 # Authors

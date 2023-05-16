@@ -14,7 +14,13 @@
                     {% endfor %}
                 </ul>
             {% else %}
-                <span>You ain't in no clubs!</span>
+                <div class="position-absolute top-50 start-50 translate-middle text-center">
+                    <span>You aren't in any clubs!</span>
+                    <br/>
+                    <a role="button" class="btn btn-secondary" href="{% url 'book_club:create_book_club' %}">
+                        Create Book Club
+                    </a>
+                </div>
             {% endif %}
         </div>
     </div>

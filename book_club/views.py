@@ -4,7 +4,8 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 
-from .models import Reader
+from .models import BookClub, Reader
+from .forms import BookClubForm, ReaderCreationForm
 
 
 def register_reader(req):
@@ -13,7 +14,7 @@ def register_reader(req):
     """
 
     # TODO - Probably need custom form...
-    return_dict = {}
+    return_dict = {'form': ReaderCreationForm}
 
     # Create user on POST
     if req.method == 'POST':
@@ -86,7 +87,33 @@ def book_clubs(req):
     """
 
     # Pull the groups the reader is a member of
-    reader_clubs = req.user.book_clubs.all()
+    reader_clubs = BookClub.objects.filter(readers__id=req.user.id).all()
     return_dict = {'book_clubs': reader_clubs, 'in_clubs': len(reader_clubs) > 0}
 
     return render(req, 'book_club/book_clubs.html', return_dict)
+
+
+@login_required
+def create_book_club(req):
+    """
+    Create new book club view and POST
+    """
+
+    return_dict = {'form': BookClubForm}
+
+    # Create new book club on POST
+    if req.method == 'POST':
+        try:
+            form = BookClubForm(req.POST)
+            # TODO - See if generating UUID here allows for commit=False
+            new_book_club = form.save()
+            new_book_club.readers.add(req.user)
+            new_book_club.save()
+
+            return redirect('book_club:book_clubs')
+        except IntegrityError:
+            return_dict['error'] = 'Book Club name already exists'
+        except ValueError:
+            return_dict['error'] = 'Failed to validate'
+
+    return render(req, 'book_club/create_book_club.html', return_dict)
