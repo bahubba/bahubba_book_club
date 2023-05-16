@@ -1,6 +1,7 @@
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
+from django.forms import ModelForm
 
-from .models import Reader
+from .models import BookClub, Reader
 
 
 class ReaderCreationForm(UserCreationForm):
@@ -13,3 +14,9 @@ class ReaderChangeForm(UserChangeForm):
     class Meta:
         model = Reader
         fields = ("username",)
+
+
+class BookClubForm(ModelForm):
+    class Meta:
+        model = BookClub
+        fields = ['name']
