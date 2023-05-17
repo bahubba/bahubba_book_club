@@ -18,6 +18,12 @@ body {
   font-family: 'Roboto Slab', serif;
 }
 
+ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
 .main-container {
   padding-top: 2em;
 }
@@ -28,4 +34,16 @@ body {
 
 .text-muted {
   color: #708090ad !important; // Bootstrap marks this as important themselves...
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+.hidden-hover-child {
+  display: none;
+}
+
+.hidden-hover-parent:hover .hidden-hover-child {
+  display: inline-block;
 }

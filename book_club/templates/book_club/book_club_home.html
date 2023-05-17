@@ -1,0 +1,30 @@
+{% extends "book_club/base.html" %}
+{% block content %}
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-12">
+            <h2>{{ book_club.name }}</h2>
+        </div>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-md-4 p-2">
+            <div class="p-2 shadow rounded">
+                <h4>Readers</h4>
+                <ul>
+                    {% for reader in book_club.readers.all %}
+                        <li>{{ reader.username }} ({{ reader.given_name }} {{ reader.surname }})</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        <div class="col-md-4 p-2">
+            <div class="p-2 shadow rounded">
+                <h4>Books</h4>
+            </div>
+        </div>
+        <div class="col-md-4 p-2">
+            <div class="p-2 shadow rounded">
+                <h4>Discussions</h4>
+            </div>
+        </div>
+    </div>
+{% endblock %}

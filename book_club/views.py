@@ -1,5 +1,5 @@
 from django.db import IntegrityError
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -77,7 +77,12 @@ def logout_reader(req):
 
 @login_required
 def home(req):
-    return render(req, 'book_club/home.html')
+
+    # Pull the groups the reader is a member of
+    reader_clubs = BookClub.objects.filter(readers__id=req.user.id).all()
+    return_dict = {'book_clubs': reader_clubs, 'in_clubs': len(reader_clubs) > 0}
+
+    return render(req, 'book_club/home.html', return_dict)
 
 
 @login_required
@@ -88,6 +93,7 @@ def book_clubs(req):
 
     # Pull the groups the reader is a member of
     reader_clubs = BookClub.objects.filter(readers__id=req.user.id).all()
+    # TODO - Is there a different way to do in_clubs' logic in the template?
     return_dict = {'book_clubs': reader_clubs, 'in_clubs': len(reader_clubs) > 0}
 
     return render(req, 'book_club/book_clubs.html', return_dict)
@@ -104,7 +110,7 @@ def create_book_club(req):
     # Create new book club on POST
     if req.method == 'POST':
         try:
-            form = BookClubForm(req.POST)
+            form = BookClubForm(req.POST, req.FILES)
             # TODO - See if generating UUID here allows for commit=False
             new_book_club = form.save()
             new_book_club.readers.add(req.user)
@@ -117,3 +123,21 @@ def create_book_club(req):
             return_dict['error'] = 'Failed to validate'
 
     return render(req, 'book_club/create_book_club.html', return_dict)
+
+
+@login_required
+def book_club_home(req, book_club_name):
+    """
+    Home page for a given book club
+    """
+
+    # Get the book club from the DB
+    book_club = get_object_or_404(BookClub, name=book_club_name)
+
+    # TODO - If the reader isn't a member of the group, redirect
+    is_member = next((reader for reader in book_club.readers.all() if reader.id == req.user.id), None)
+    if is_member is None:
+        pass
+
+    # TODO - Strip reader IDs from response
+    return render(req, 'book_club/book_club_home.html', {'book_club': book_club})

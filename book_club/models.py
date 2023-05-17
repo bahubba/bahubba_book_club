@@ -49,6 +49,8 @@ class BookClub(models.Model):
         primary_key=True, default=uuid.uuid4, editable=False, null=False
     )
     name = models.CharField(max_length=100, null=False, unique=True)
+    image = models.ImageField(upload_to='images/', null=True, blank=True)
+    description = models.CharField(max_length=255, null=True, blank=True)
     created = models.DateTimeField(default=timezone.now)
     disbanded = models.DateTimeField(null=True, blank=True)
     readers = models.ManyToManyField(Reader)
