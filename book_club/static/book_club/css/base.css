@@ -12257,6 +12257,12 @@ body {
   font-family: 'Roboto Slab', serif;
 }
 
+ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
 .main-container {
   padding-top: 2em;
 }

@@ -1,5 +1,5 @@
 from django.db import IntegrityError
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -117,3 +117,27 @@ def create_book_club(req):
             return_dict['error'] = 'Failed to validate'
 
     return render(req, 'book_club/create_book_club.html', return_dict)
+
+
+@login_required
+def book_club_home(req, book_club_name):
+    """
+    Home page for a given book club
+    """
+
+    # Get the book club from the DB
+    book_club = get_object_or_404(BookClub, name=book_club_name)
+
+    # TODO - If the reader isn't a member of the group, redirect
+    is_member = next((reader for reader in book_club.readers.all() if reader.id == req.user.id), None)
+    if is_member is None:
+        pass
+
+    print(book_club.readers.all())
+    for reader in book_club.readers.all():
+        print(type(reader))
+        print(reader.id)
+        print(reader.given_name)
+
+    # TODO - Strip reader IDs from response
+    return render(req, 'book_club/book_club_home.html', {'book_club': book_club})

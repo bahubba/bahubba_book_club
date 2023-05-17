@@ -7,13 +7,13 @@ from .models import BookClub, Reader
 class ReaderCreationForm(UserCreationForm):
     class Meta:
         model = Reader
-        fields = ("username",)
+        fields = ("username", "email", "given_name", "surname",)
 
 
 class ReaderChangeForm(UserChangeForm):
     class Meta:
         model = Reader
-        fields = ("username",)
+        fields = ("username", "email", "given_name", "surname",)
 
 
 class BookClubForm(ModelForm):
