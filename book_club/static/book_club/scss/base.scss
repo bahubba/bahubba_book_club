@@ -35,3 +35,15 @@ ul {
 .text-muted {
   color: #708090ad !important; // Bootstrap marks this as important themselves...
 }
+
+.clickable {
+  cursor: pointer;
+}
+
+.hidden-hover-child {
+  display: none;
+}
+
+.hidden-hover-parent:hover .hidden-hover-child {
+  display: inline-block;
+}
