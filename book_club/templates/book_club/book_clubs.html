@@ -1,27 +1,49 @@
 {% extends "book_club/base.html" %}
+{% load static %}
+
 {% block content %}
-    <div class="row justify-content-center mt-5">
-        <div class="col-md-8">
-            <h2>Book Clubs</h2>
+    <div class="row justify-content-start mt-5">
+        <div class="col-md-12 hidden-hover-parent">
+            <h2>Book Clubs <a class="btn btn-sm rounded shadow-sm hidden-hover-child" href="{% url 'book_club:create_book_club' %}">+</a></h2>
         </div>
     </div>
-    <div class="row justify-content-center mt-2">
-        <div class="col-md-8">
-            {% if in_clubs %}
-                <ul>
-                    {% for book_club in book_clubs %}
-                        <li><a href="{% url 'book_club:book_club_home' book_club.name %}">{{ book_club.name }}</a></li>
-                    {% endfor %}
-                </ul>
-            {% else %}
-                <div class="position-absolute top-50 start-50 translate-middle text-center">
-                    <span>You aren't in any clubs!</span>
-                    <br/>
-                    <a role="button" class="btn btn-secondary" href="{% url 'book_club:create_book_club' %}">
-                        Create Book Club
-                    </a>
+    {% if in_clubs %}
+        <div class="row row-cols-lg-4 row-cols-md-3 row-cols-sm-2 justify-content-center mt-2">
+            {% for book_club in book_clubs %}
+                <div class="col">
+                    <div
+                        class="card shadow-sm clickable"
+                        onclick="location.href='{% url 'book_club:book_club_home' book_club.name%}'"
+                    >
+                        {# TODO - Figure out a better way to check and default with no image #}
+                        {% if book_club.image %}
+                            <img
+                                class="card-img-top"
+                                src="{{ book_club.image.url }}"
+                                alt="book-club-image"
+                            />
+                        {% else %}
+                            <img
+                                class="card-img-top"
+                                src="{% static 'book_club/images/books.jpg' %}"
+                                alt="book-club-image"
+                            />
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ book_club.name }}</h5>
+                            <p class="card-text">{{ book_club.description|default:'A book club for reading books!' }}</p>
+                        </div>
+                    </div>
                 </div>
-            {% endif %}
+            {% endfor %}
         </div>
-    </div>
+    {% else %}
+        <div class="position-absolute top-50 start-50 translate-middle text-center">
+            <span>You aren't in any clubs!</span>
+            <br/>
+            <a role="button" class="btn btn-secondary" href="{% url 'book_club:create_book_club' %}">
+                Create Book Club
+            </a>
+        </div>
+    {% endif %}
 {% endblock %}
