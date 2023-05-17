@@ -19,4 +19,4 @@ class ReaderChangeForm(UserChangeForm):
 class BookClubForm(ModelForm):
     class Meta:
         model = BookClub
-        fields = ['name']
+        fields = ['name', 'image', 'description', ]
