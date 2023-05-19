@@ -1,15 +1,15 @@
 {% extends "book_club/base.html" %}
 {% block content %}
-<div class="row justify-content-center mt-5">
+<div class="row justify-content-center">
   <div class="col-md-8">
-    <h2>Register</h2>
+    <h2 class="p-2 m-0">Register</h2>
     <small id="usernameHelp" class="form-text text-muted">
         <span class="text-danger">*</span> = required
     </small>
   </div>
 </div>
-<div class="row justify-content-center mt-3">
-  <div class="col-md-8">
+<div class="row justify-content-center mt-3 overflow-y-auto overflow-hidden flex-grow-1">
+  <div class="col-md-8 h-100 overflow-y-auto">
     {% if error %}
         <div class="alert alert-danger" role="alert">{{ error }}</div>
     {% endif %}

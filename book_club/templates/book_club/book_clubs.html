@@ -2,9 +2,10 @@
 {% load static %}
 
 {% block content %}
-    <div class="row justify-content-start mt-5">
-        <div class="col-md-12 hidden-hover-parent">
-            <h2>Book Clubs <a class="btn btn-sm rounded shadow-sm hidden-hover-child" href="{% url 'book_club:create_book_club' %}">+</a></h2>
+    <div class="row justify-content-start ps-2">
+        <div class="col-md-12 hidden-hover-parent d-flex justify-content-start align-items-center">
+            <h2 class="p-2 m-0">Book Clubs</h2>
+            <a class="btn btn-sm btn-secondary rounded shadow-sm hidden-hover-child" href="{% url 'book_club:create_book_club' %}">+</a>
         </div>
     </div>
     {% if in_clubs %}

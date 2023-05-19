@@ -1,29 +1,39 @@
 {% extends "book_club/base.html" %}
 {% block content %}
-    <div class="row justify-content-center mt-5">
+    <div class="row justify-content-center">
         <div class="col-md-12">
-            <h2>{{ book_club.name }}</h2>
+            <h2 class="p-2 m-0">{{ book_club.name }}</h2>
         </div>
     </div>
-    <div class="row justify-content-center">
-        <div class="col-md-4 p-2">
-            <div class="p-2 shadow rounded">
-                <h4>Readers</h4>
-                <ul>
-                    {% for reader in book_club.readers.all %}
-                        <li>{{ reader.username }} ({{ reader.given_name }} {{ reader.surname }})</li>
-                    {% endfor %}
-                </ul>
+    <div class="row row-cols-3 px-2 justify-content-center overflow-hidden flex-grow-1">
+        <div class="col p-2 h-100">
+            <div class="p-2 shadow rounded h-100 d-flex flex-column">
+                <div class="flex-grow-0 flex-shrink-1">
+                    <h4>Readers</h4>
+                </div>
+                <div class="flex-grow-1 overflow-y-auto">
+                    <ul>
+                        {% for reader in book_club.readers.all %}
+                            <li>{{ reader.username }} ({{ reader.given_name }} {{ reader.surname }})</li>
+                        {% endfor %}
+                    </ul>
+                </div>
             </div>
         </div>
-        <div class="col-md-4 p-2">
-            <div class="p-2 shadow rounded">
-                <h4>Books</h4>
+        <div class="col p-2 h-100">
+            <div class="p-2 shadow rounded h-100 d-flex flex-column">
+                <div class="flex-grow-0 flex-shrink-1">
+                    <h4>Books</h4>
+                </div>
+                <div class="flex-grow-1 overflow-y-auto"></div>
             </div>
         </div>
-        <div class="col-md-4 p-2">
-            <div class="p-2 shadow rounded">
-                <h4>Discussions</h4>
+        <div class="col p-2 h-100">
+            <div class="p-2 shadow rounded h-100 d-flex flex-column">
+                <div class="flex-grow-0 flex-shrink-1">
+                    <h4>Discussions</h4>
+                </div>
+                <div class="flex-grow-1 overflow-y-auto"></div>
             </div>
         </div>
     </div>
