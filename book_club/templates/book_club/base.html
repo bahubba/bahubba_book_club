@@ -31,7 +31,7 @@
   </head>
   <body>
     <nav class="navbar navbar-expand-md navbar-light fixed-top bg-primary">
-      <div class="container">
+      <div class="container mw-100">
         <a class="navbar-brand" href="{% url 'home' %}">
           <img
             src="{% static 'book_club/favicon/favicon.ico' %}"
@@ -84,7 +84,7 @@
       </div>
     </nav>
 
-    <div class="container main-container">
+    <div class="main-container">
       {% block content %}{% endblock %}
     </div>
 

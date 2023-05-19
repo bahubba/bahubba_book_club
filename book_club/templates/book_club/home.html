@@ -2,46 +2,47 @@
 {% load static %}
 
 {% block content %}
-    <div class="row justify-content-center mt-5">
+    <div class="row justify-content-center">
         <div class="col-md-12">
-            <h2>Home</h2>
+            <h2 class="p-2 m-0">Home</h2>
         </div>
     </div>
-    <div class="row justify-content-center">
-        <div class="col-md-4 p-2">
-            <div class="p-2 shadow rounded">
-                <h4>My Clubs</h4>
+    <div class="row row-cols-3 px-2 justify-content-center overflow-hidden flex-grow-1">
+        <div class="col p-2 h-100">
+            <div class="p-2 pb-0 shadow rounded h-100 d-flex flex-column">
+                <div class="flex-grow-0 flex-shrink-1">
+                    <h4>My Clubs</h4>
+                </div>
                 {% if in_clubs %}
-
-                    {% for book_club in book_clubs.all %}
-                        <div
-                            class="card m-4 shadow-sm clickable"
-                            onclick="location.href='{% url 'book_club:book_club_home' book_club.name%}'"
-                        >
-                            {# TODO - Figure out a better way to check and default with no image #}
-                            {% if book_club.image %}
-                                <img
-                                    class="card-img-top"
-                                    src="{{ book_club.image.url }}"
-                                    alt="book-club-image"
-                                />
-                            {% else %}
-                                <img
-                                    class="card-img-top"
-                                    src="{% static 'book_club/images/books.jpg' %}"
-                                    alt="book-club-image"
-                                />
-                            {% endif %}
-                            <div class="card-body">
-                                <h5 class="card-title">{{ book_club.name }}</h5>
-                                <p class="card-text">{{ book_club.description|default:'A book club for reading books!' }}</p>
+                    <div class="flex-grow-1 overflow-y-auto">
+                        {% for book_club in book_clubs.all %}
+                            <div
+                                class="card m-4 shadow-sm clickable"
+                                onclick="location.href='{% url 'book_club:book_club_home' book_club.name%}'"
+                            >
+                                {# TODO - Figure out a better way to check and default with no image #}
+                                {% if book_club.image %}
+                                    <img
+                                        class="card-img-top"
+                                        src="{{ book_club.image.url }}"
+                                        alt="book-club-image"
+                                    />
+                                {% else %}
+                                    <img
+                                        class="card-img-top"
+                                        src="{% static 'book_club/images/books.jpg' %}"
+                                        alt="book-club-image"
+                                    />
+                                {% endif %}
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ book_club.name }}</h5>
+                                    <p class="card-text">{{ book_club.description|default:'A book club for reading books!' }}</p>
+                                </div>
                             </div>
-                        </div>
-                    {% endfor %}
+                        {% endfor %}
+                    </div>
                 {% else %}
-                    <div class="justify-content-center text-center">
-                        <span>You aren't in any clubs!</span>
-                        <br/>
+                    <div class="flex-grow-1 overflow-y-auto d-flex flex-column align-items-center">
                         <a role="button" class="btn btn-sm btn-secondary" href="{% url 'book_club:create_book_club' %}">
                             Create Book Club
                         </a>
@@ -49,14 +50,20 @@
                 {% endif %}
             </div>
         </div>
-        <div class="col-md-4 p-2">
-            <div class="p-2 shadow rounded">
-                <h4>My Books</h4>
+        <div class="col p-2 h-100">
+            <div class="p-2 shadow rounded h-100 d-flex flex-column">
+                <div class="flex-grow-0 flex-shrink-1">
+                    <h4>My Books</h4>
+                </div>
+                <div class="flex-grow-1 overflow-y-auto"></div>
             </div>
         </div>
-        <div class="col-md-4 p-2">
-            <div class="p-2 shadow rounded">
-                <h4>Trending</h4>
+        <div class="col p-2 h-100">
+            <div class="p-2 shadow rounded h-100 d-flex flex-column">
+                <div class="flex-grow-0 flex-shrink-1">
+                    <h4>Trending</h4>
+                </div>
+                <div class="flex-grow-1 overflow-y-auto"></div>
             </div>
         </div>
     </div>

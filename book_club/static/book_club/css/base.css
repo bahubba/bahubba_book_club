@@ -12253,6 +12253,12 @@ textarea.form-control-lg {
   }
 }
 
+html, body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+}
+
 body {
   font-family: 'Roboto Slab', serif;
 }
@@ -12264,7 +12270,13 @@ ul {
 }
 
 .main-container {
-  padding-top: 2em;
+  position: absolute;
+  top: 56px;
+  height: calc(100% - 56px);
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .nav-link {
@@ -12285,4 +12297,23 @@ ul {
 
 .hidden-hover-parent:hover .hidden-hover-child {
   display: inline-block;
+}
+
+::-webkit-scrollbar {
+  width: 20px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #d6dee1;
+  border-radius: 20px;
+  border: 6px solid transparent;
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #a8bbbf;
 }
