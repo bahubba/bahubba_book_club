@@ -22,7 +22,11 @@ def register_reader(req):
             try:
                 # Create and persist the Reader (User)
                 reader = Reader.objects.create_user(
-                    req.POST['username'], req.POST['email'], req.POST['password1']
+                    username=req.POST['username'],
+                    email=req.POST['email'],
+                    password=req.POST['password1'],
+                    given_name=req.POST['given_name'],
+                    surname=req.POST['surname'],
                 )
                 reader.save()
                 login(req, reader)
@@ -36,6 +40,8 @@ def register_reader(req):
     # Default to assuming GET functionality
 
     # If already logged in, redirect
+    if req.user.is_authenticated:
+        return redirect('home')
 
     # Otherwise render the register page
     return render(req, 'book_club/register_reader.html', return_dict)
@@ -63,6 +69,8 @@ def login_reader(req):
     # Default to assuming GET functionality
 
     # If already logged in, redirect
+    if req.user.is_authenticated:
+        return redirect('home')
 
     # Otherwise render the login page
     return render(req, 'book_club/login_reader.html', return_dict)
@@ -113,7 +121,7 @@ def create_book_club(req):
             form = BookClubForm(req.POST, req.FILES)
             # TODO - See if generating UUID here allows for commit=False
             new_book_club = form.save()
-            new_book_club.readers.add(req.user)
+            new_book_club.readers.add(req.user, through_defaults={'club_role': 'AD'})
             new_book_club.save()
 
             return redirect('book_club:book_clubs')

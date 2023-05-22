@@ -45,6 +45,53 @@
                         id="description"
                     />
                 </div>
+                <div class="form-group">
+                    <label for="publicity">Publicity</label>
+                    <br />
+                    <div class="form-check form-check-inline">
+                        <input
+                            class="form-check-input"
+                            type="radio"
+                            name="publicity"
+                            id="public-publicity"
+                            value="PB"
+                        />
+                        <label class="form-check-label" for="public-publicity">Public</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input
+                            class="form-check-input"
+                            type="radio"
+                            name="publicity"
+                            id="observable-publicity"
+                            value="OB"
+                        />
+                        <label class="form-check-label" for="observable-publicity">Observable</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input
+                            class="form-check-input"
+                            type="radio"
+                            name="publicity"
+                            id="private-publicity"
+                            value="PR"
+                            checked
+                        />
+                        <label class="form-check-label" for="private-publicity">Private</label>
+                    </div>
+                    <br />
+                    <small class="text-black-50">
+                            <b>Private</b> - Your club won't appear in searches and won't be joinable without invitation
+                    </small>
+                    <br />
+                    <small class="text-black-50">
+                            <b>Observable</b> - Your club and its books, ratings, and discussions will be public, but users won't be able to join or participate without invitation
+                    </small>
+                    <br />
+                    <small class="text-black-50">
+                            <b>Public</b> - Your club will be publicly visible and users can join as readers and post in discussions freely
+                    </small>
+                </div>
                 <button type="submit" class="btn btn-primary mt-2">Create Book Club</button>
             </form>
         </div>
