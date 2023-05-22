@@ -1,3 +1,5 @@
+from typing import Optional
+
 from django.db import IntegrityError
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.forms import AuthenticationForm
@@ -140,12 +142,47 @@ def book_club_home(req, book_club_name):
     """
 
     # Get the book club from the DB
-    book_club = get_object_or_404(BookClub, name=book_club_name)
+    book_club: Optional[BookClub]
+    try:
+        book_club = BookClub.objects.get(
+            name=book_club_name,
+            readers__id=req.user.id,
+            readers__bookclubreaders__left__isnull=True,
+        )
+    except BookClub.DoesNotExist:
+        book_club = None
 
-    # TODO - If the reader isn't a member of the group, redirect
-    is_member = next((reader for reader in book_club.readers.all() if reader.id == req.user.id), None)
-    if is_member is None:
-        pass
+    # If the reader isn't a member of the group, redirect
+    # TODO - redirect to current page instead of home
+    if book_club is None:
+        return redirect('home')
 
     # TODO - Strip reader IDs from response
     return render(req, 'book_club/book_club_home.html', {'book_club': book_club})
+
+
+@login_required
+def book_club_admin(req, book_club_name):
+    """
+    Base admin page for managing a book club
+    """
+
+    # Get the book club from the DB
+    book_club: Optional[BookClub]
+    try:
+        book_club = BookClub.objects.get(
+            name=book_club_name,
+            readers__id=req.user.id,
+            readers__bookclubreaders__club_role='AD',
+            readers__bookclubreaders__left__isnull=True,
+        )
+    except BookClub.DoesNotExist:
+        book_club = None
+
+    # If not an admin, redirect to home
+    # TODO - Redirect to current page
+    print('book_club:', book_club)
+    if book_club is None:
+        return redirect('home')
+
+    return render(req, 'book_club/book_club_admin.html', {'book_club': book_club, 'title': f'Manage {book_club_name}'})
