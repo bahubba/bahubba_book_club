@@ -4,6 +4,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 
 from book_club.managers import ReaderManager
 
@@ -45,6 +46,11 @@ class Reader(AbstractBaseUser, PermissionsMixin):
 
 # Book Clubs
 class BookClub(models.Model):
+    class Publicity(models.TextChoices):
+        PUBLIC = 'PB', _('Public')
+        OBSERVABLE = 'OB', _('Observable'),
+        PRIVATE = 'PR', _('Private')
+
     id = models.UUIDField(
         primary_key=True, default=uuid.uuid4, editable=False, null=False
     )
@@ -53,7 +59,30 @@ class BookClub(models.Model):
     description = models.CharField(max_length=255, null=True, blank=True)
     created = models.DateTimeField(default=timezone.now)
     disbanded = models.DateTimeField(null=True, blank=True)
-    readers = models.ManyToManyField(Reader)
+    readers = models.ManyToManyField(Reader, through='BookClubReaders')
+    publicity = models.CharField(max_length=2, choices=Publicity.choices, default=Publicity.PUBLIC)
+
+
+# Reader <-> Book Club Join Table with Roles
+class BookClubReaders(models.Model):
+    class RoleInClub(models.TextChoices):
+        ADMIN = 'AD', _('Admin')
+        PARTICIPANT = 'PT', _('Participant')
+        READER = 'RD', _('Reader')
+        OBSERVER = 'OB', _('Observer')
+
+    reader = models.ForeignKey(Reader, on_delete=models.DO_NOTHING)
+    book_club = models.ForeignKey(BookClub, on_delete=models.DO_NOTHING)
+    club_role = models.CharField(
+        max_length=2,
+        choices=RoleInClub.choices,
+        default=RoleInClub.READER
+    )
+    joined = models.DateTimeField(default=timezone.now)
+    left = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        unique_together = ('reader', 'book_club')
 
 
 # Authors
