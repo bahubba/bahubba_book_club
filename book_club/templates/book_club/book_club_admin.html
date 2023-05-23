@@ -1,0 +1,47 @@
+{% extends 'book_club/base.html' %}
+{% block content %}
+    <div class="row justify-content-center">
+        <div class="col-md-12">
+            <h2 class="p-2 m-0">{{ title }}</h2>
+        </div>
+    </div>
+    <div class="row justify-content-center p-2">
+        <div class="col-md-2 border-end">
+            <div class="list-group list-group-flush">
+                <a
+                    href="{% url 'book_club:book_club_admin' book_club.name %}"
+                    class="list-group-item {% if section == 'details' %} bg-secondary {% endif %}"
+                >
+                    Details
+                </a>
+                <a
+                    href="{% url 'book_club:book_club_admin_members' book_club.name %}"
+                    class="list-group-item {% if section == 'members' %} bg-secondary {% endif %}"
+                >
+                    Members
+                </a>
+                <a
+                    href="{% url 'book_club:book_club_admin_prefs' book_club.name %}"
+                    class="list-group-item {% if section == 'prefs' %} bg-secondary {% endif %}"
+                >
+                    Preferences
+                </a>
+                <a
+                    href="{% url 'book_club:book_club_admin_disband' book_club.name %}"
+                    class="btn btn-sm btn-danger mt-2 mx-4"
+                >
+                    Disband
+                </a>
+            </div>
+        </div>
+        <div class="col-md-8">
+            {% if section == 'details' %}
+                {% include 'book_club/fragments/book_club_form.html' with button_text='Update Book Club' %}
+            {% elif section == 'members' %}
+                {% include 'book_club/fragments/book_club_members_form.html' with book_club=book_club readers=book_club.readers.all %}
+            {% elif section == 'prefs' %}
+                {% include 'book_club/fragments/book_club_preferences_form.html' %}
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
