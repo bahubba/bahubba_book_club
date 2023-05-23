@@ -272,6 +272,7 @@ def __get_admin_club_or_none(book_club_name, user_id):
     try:
         book_club = BookClub.objects.get(
             name=book_club_name,
+            disbanded__isnull=True,
             readers__id=user_id,
             readers__bookclubreaders__club_role='AD',
             readers__bookclubreaders__left__isnull=True,
