@@ -1,0 +1,49 @@
+<ul class="list-group list-group-flush">
+    <li class="list-group-item">
+        <div class="row">
+            <div class="col-4">
+                <h4>Role</h4>
+            </div>
+            <div class="col-7">
+                <h4>Name</h4>
+            </div>
+            <div class="col-1">
+                <h4>Remove</h4>
+            </div>
+        </div>
+    </li>
+    {% for reader in readers %}
+        <li class="list-group-item">
+            <div class="row">
+                <div class="col-4">
+                    <form
+                        method="POST"
+                        action="{% url 'book_club:book_club_admin_change_role' book_club.name %}"
+                    >
+                        <input class="d-none" type="text" disabled value="{{ book_club.id }}" />
+                        <input class="d-none" type="text" disabled value="{{ reader.id }}" />
+                        <select class="form-select" aria-label="Book Club Reader Role">
+                            <option value="AD">Admin</option>
+                            <option value="PT">Participant</option>
+                            <option value="RD">Reader</option>
+                            {% if book_club.publicity != 'private' %}
+                                <option value="OB">Observer</option>
+                            {% endif %}
+                        </select>
+                    </form>
+                </div>
+                <div class="col-7">
+                    <span><b>{{ reader.given_name }} {{ reader.surname }}</b></span>
+                </div>
+                <div class="col-1">
+                    <a
+                        href="{% url 'book_club:book_club_admin_remove_reader' book_club.name %}"
+                        class="btn btn-danger"
+                    >
+                        Remove
+                    </a>
+                </div>
+            </div>
+        </li>
+    {% endfor %}
+</ul>

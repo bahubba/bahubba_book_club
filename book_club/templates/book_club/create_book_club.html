@@ -10,7 +10,7 @@
             {% if error %}
                 <div class="alert alert-danger" role="alert">{{ error }}</div>
             {% endif %}
-            {% include 'book_club/fragments/book_club_form.html' %}
+            {% include 'book_club/fragments/book_club_form.html' with button_text='Create Book Club' %}
         </div>
     </div>
 {% endblock %}
