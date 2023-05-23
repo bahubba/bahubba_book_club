@@ -1,8 +1,14 @@
 {% extends "book_club/base.html" %}
 {% block content %}
-    <div class="row justify-content-center">
-        <div class="col-md-12">
+    <div class="row justify-content-start">
+        <div class="col-md-12 hidden-hover-parent d-flex justify-content-start align-items-center">
             <h2 class="p-2 m-0">{{ book_club.name }}</h2>
+            <a
+                href="{% url 'book_club:book_club_admin' book_club.name %}"
+                class="btn btn-sm btn-secondary rounded shadow-sm hidden-hover-child"
+            >
+                Admin
+            </a>
         </div>
     </div>
     <div class="row row-cols-3 px-2 justify-content-center overflow-hidden flex-grow-1">
