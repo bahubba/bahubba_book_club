@@ -12296,7 +12296,8 @@ ul {
 }
 
 .hidden-hover-parent:hover .hidden-hover-child {
-  display: inline-block;
+  display: flex;
+  align-items: center;
 }
 
 ::-webkit-scrollbar {
