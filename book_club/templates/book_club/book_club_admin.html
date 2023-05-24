@@ -38,7 +38,7 @@
             {% if section == 'details' %}
                 {% include 'book_club/fragments/book_club_form.html' with button_text='Update Book Club' %}
             {% elif section == 'members' %}
-                {% include 'book_club/fragments/book_club_members_form.html' with book_club=book_club readers=book_club.readers.all %}
+                {% include 'book_club/fragments/book_club_members_form.html' with book_club=book_club %}
             {% elif section == 'prefs' %}
                 {% include 'book_club/fragments/book_club_preferences_form.html' %}
             {% endif %}

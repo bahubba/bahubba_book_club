@@ -124,7 +124,7 @@ def create_book_club(req):
             form = BookClubForm(req.POST, req.FILES)
             # TODO - See if generating UUID here allows for commit=False
             new_book_club = form.save()
-            new_book_club.readers.add(req.user, through_defaults={'club_role': 'AD'})
+            new_book_club.readers.add(req.user, through_defaults={'club_role': 'AD', 'is_creator': True})
             new_book_club.save()
 
             return redirect('book_club:book_clubs')
@@ -132,6 +132,8 @@ def create_book_club(req):
             return_dict['error'] = 'Book Club name already exists'
         except ValueError:
             return_dict['error'] = 'Failed to validate'
+
+    # Default to assuming GET functionality
 
     return render(req, 'book_club/create_book_club.html', return_dict)
 
@@ -197,6 +199,8 @@ def book_club_admin_members(req, book_club_name):
     # TODO - Redirect to current page
     if book_club is None:
         return redirect('home')
+
+    print('book_club:', book_club.bookclubreaders_set.all)
 
     return render(
         req,

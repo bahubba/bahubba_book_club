@@ -78,6 +78,7 @@ class BookClubReaders(models.Model):
         choices=RoleInClub.choices,
         default=RoleInClub.READER
     )
+    is_creator = models.BooleanField(default=False)
     joined = models.DateTimeField(default=timezone.now)
     left = models.DateTimeField(null=True, blank=True)
 
