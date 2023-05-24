@@ -12,7 +12,7 @@
             </div>
         </div>
     </li>
-    {% for reader in readers %}
+    {% for reader_role in book_club.bookclubreaders_set.all %}
         <li class="list-group-item">
             <div class="row">
                 <div class="col-4">
@@ -21,8 +21,12 @@
                         action="{% url 'book_club:book_club_admin_change_role' book_club.name %}"
                     >
                         <input class="d-none" type="text" disabled value="{{ book_club.id }}" />
-                        <input class="d-none" type="text" disabled value="{{ reader.id }}" />
-                        <select class="form-select" aria-label="Book Club Reader Role">
+                        <input class="d-none" type="text" disabled value="{{ reader_role.reader.id }}" />
+                        <select
+                            class="form-select"
+                            aria-label="Book Club Reader Role"
+                            {% if reader_role.is_creator %}disabled{% endif %}
+                        >
                             <option value="AD">Admin</option>
                             <option value="PT">Participant</option>
                             <option value="RD">Reader</option>
@@ -33,7 +37,7 @@
                     </form>
                 </div>
                 <div class="col-7">
-                    <span><b>{{ reader.given_name }} {{ reader.surname }}</b></span>
+                    <span><b>{{ reader_role.reader.given_name }} {{ reader_role.reader.surname }}</b></span>
                 </div>
                 <div class="col-1">
                     <a
