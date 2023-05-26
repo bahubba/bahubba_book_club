@@ -1,3 +1,4 @@
+import traceback
 from typing import Optional
 
 from django.db import IntegrityError
@@ -131,7 +132,7 @@ def create_book_club(req):
         except IntegrityError:
             return_dict['error'] = 'Book Club name already exists'
         except ValueError:
-            return_dict['error'] = 'Failed to validate'
+            return_dict['error'] = 'Failed to validate; Try a different name'
 
     # Default to assuming GET functionality
 
@@ -147,11 +148,17 @@ def book_club_home(req, book_club_name):
     # Get the book club from the DB
     book_club: Optional[BookClub]
     try:
+        print(BookClub.objects.filter(
+            name=book_club_name,
+            disbanded__isnull=True,
+            readers__id=req.user.id,
+            bookclubreaders__left__isnull=True,
+        ).query)
         book_club = BookClub.objects.get(
             name=book_club_name,
             disbanded__isnull=True,
             readers__id=req.user.id,
-            readers__bookclubreaders__left__isnull=True,
+            bookclubreaders__left__isnull=True,
         )
     except BookClub.DoesNotExist:
         book_club = None
@@ -278,8 +285,8 @@ def __get_admin_club_or_none(book_club_name, user_id):
             name=book_club_name,
             disbanded__isnull=True,
             readers__id=user_id,
-            readers__bookclubreaders__club_role='AD',
-            readers__bookclubreaders__left__isnull=True,
+            bookclubreaders__club_role='AD',
+            bookclubreaders__left__isnull=True,
         )
     except BookClub.DoesNotExist:
         book_club = None
