@@ -1,6 +1,6 @@
 from typing import Optional
 
-from django.db import IntegrityError
+from django.db import IntegrityError, connection
 from django.db.models import Q
 from django.shortcuts import redirect, render
 from django.contrib.auth.forms import AuthenticationForm
@@ -217,7 +217,7 @@ def book_club_membership_request(req, book_club_name):
     try:
         book_club = BookClub.objects.get(
             ~Q(publicity='PR'),
-            ~Q(readers__id=req.user.id),
+            ~Q(readers__id=req.user.id) | Q(bookclubreaders__left__isnull=False),
             name=book_club_name,
             disbanded__isnull=True,
         )
