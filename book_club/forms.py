@@ -1,7 +1,7 @@
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
-from django.forms import CharField, Form, ModelForm, Textarea, TextInput
+from django.forms import CharField, Form, ModelForm, Textarea, TextInput, HiddenInput
 
-from .models import BookClub, Reader
+from .models import BookClub, Reader, MembershipRequest
 
 
 class ReaderCreationForm(UserCreationForm):
@@ -34,15 +34,16 @@ class BookClubSearchForm(Form):
     )
 
 
-class MembershipRequestForm(Form):
-    message = CharField(
-        label='Request Message',
-        widget=Textarea(attrs={
-            'id': 'request-message',
-            'class': 'form-control',
-            'aria-describedby': 'Membership request message',
-            'placeholder': 'Write a brief introduction here or tell the group why you would like to join'
-        }),
-        required=True
-    )
+class MembershipRequestForm(ModelForm):
+    def __init__(self, *args):
+        super().__init__(*args)
 
+        self.fields['message'].widget.attrs['class'] = 'form-control'
+        self.fields['message'].widget.attrs['rows'] = 2
+        self.fields['message'].widget.attrs['aria-describedby'] = 'Membership request message',
+        self.fields['message'].widget.attrs['placeholder'] = 'Write a brief introduction here or tell the group why you would like to join'
+
+    class Meta:
+        model = MembershipRequest
+        fields = ['message', ]
+        widgets = {'message': Textarea}
