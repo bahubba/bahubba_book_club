@@ -3,12 +3,23 @@
     <div class="row justify-content-start">
         <div class="col-md-12 hidden-hover-parent d-flex justify-content-start align-items-center">
             <h2 class="p-2 m-0">{{ book_club.name }}</h2>
-            <a
-                href="{% url 'book_club:book_club_admin' book_club.name %}"
-                class="btn btn-sm btn-secondary rounded shadow-sm hidden-hover-child"
-            >
-                <span class="material-icons text-black-50 fs-5">edit</span>
-            </a>
+            {% if reader_role %}
+                {% if reader_role == 'AD' %}
+                    <a
+                        href="{% url 'book_club:book_club_admin' book_club.name %}"
+                        class="btn btn-sm btn-secondary rounded shadow-sm hidden-hover-child"
+                    >
+                        <span class="material-icons text-black-50 fs-5">edit</span>
+                    </a>
+                {% endif %}
+            {% else %}
+                <a
+                    href="{% url 'book_club:book_club_membership_request' book_club.name %}"
+                    class="btn btn-sm btn-secondary rounded shadow-sm ms-2"
+                >
+                    <span>Request Membership</span>
+                </a>
+            {% endif %}
         </div>
     </div>
     <div class="row row-cols-3 px-2 justify-content-center overflow-hidden flex-grow-1">

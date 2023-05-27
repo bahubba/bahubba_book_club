@@ -1,15 +1,15 @@
-import traceback
 from typing import Optional
 
 from django.db import IntegrityError
-from django.shortcuts import get_object_or_404, redirect, render
+from django.db.models import Q
+from django.shortcuts import redirect, render
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 
 from .models import BookClub, Reader
-from .forms import BookClubForm, ReaderCreationForm, BookClubSearchForm
+from .forms import BookClubForm, ReaderCreationForm, BookClubSearchForm, MembershipRequestForm
 
 
 def register_reader(req):
@@ -145,31 +145,34 @@ def book_club_home(req, book_club_name):
     Home page for a given book club
     """
 
+    return_dict = {}
+
     # Get the book club from the DB
-    book_club: Optional[BookClub]
     try:
         book_club = BookClub.objects.get(
+            Q(readers__id=req.user.id) | Q(publicity='PB'),
             name=book_club_name,
             disbanded__isnull=True,
-            readers__id=req.user.id,
             bookclubreaders__left__isnull=True,
         )
-    except BookClub.DoesNotExist:
-        book_club = None
+        return_dict['book_club'] = book_club
+        return_dict['reader_role'] = book_club.readers.get(id=req.user.id)
 
-    # If the reader isn't a member of the group, redirect
-    # TODO - redirect to current page instead of home
-    if book_club is None:
+    # If the reader isn't a member of the group or the group isn't public, redirect
+    except BookClub.DoesNotExist:
         return redirect('home')
 
+    except Reader.DoesNotExist:
+        return_dict['reader_role'] = None
+
     # TODO - Strip reader IDs from response
-    return render(req, 'book_club/book_club_home.html', {'book_club': book_club})
+    return render(req, 'book_club/book_club_home.html', return_dict)
 
 
 @login_required
 def book_club_search(req):
     """
-    Search page for finding book clubs
+    Search page and POST for finding book clubs
     """
 
     return_dict = {'form': BookClubSearchForm, 'search_submitted': False, 'results': []}
@@ -188,8 +191,21 @@ def book_club_search(req):
             return_dict['results'] = found_book_clubs.all()
 
     # Default to assuming GET functionality
-
     return render(req, 'book_club/book_club_search.html', return_dict)
+
+
+@login_required
+def book_club_membership_request(req, book_club_name):
+    """
+    Book Club membership request page and POST
+    """
+
+    # Default to assuming GET functionality
+    return render(
+        req,
+        'book_club/book_club_membership_request_form.html',
+        {'form': MembershipRequestForm, 'book_club_name': book_club_name}
+    )
 
 
 @login_required
