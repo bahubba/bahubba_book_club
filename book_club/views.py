@@ -9,7 +9,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 
 from .models import BookClub, Reader
-from .forms import BookClubForm, ReaderCreationForm
+from .forms import BookClubForm, ReaderCreationForm, BookClubSearchForm
 
 
 def register_reader(req):
@@ -148,12 +148,6 @@ def book_club_home(req, book_club_name):
     # Get the book club from the DB
     book_club: Optional[BookClub]
     try:
-        print(BookClub.objects.filter(
-            name=book_club_name,
-            disbanded__isnull=True,
-            readers__id=req.user.id,
-            bookclubreaders__left__isnull=True,
-        ).query)
         book_club = BookClub.objects.get(
             name=book_club_name,
             disbanded__isnull=True,
@@ -170,6 +164,32 @@ def book_club_home(req, book_club_name):
 
     # TODO - Strip reader IDs from response
     return render(req, 'book_club/book_club_home.html', {'book_club': book_club})
+
+
+@login_required
+def book_club_search(req):
+    """
+    Search page for finding book clubs
+    """
+
+    return_dict = {'form': BookClubSearchForm, 'search_submitted': False, 'results': []}
+
+    # Search for book clubs on POST
+    if req.method == 'POST':
+        return_dict['form'] = BookClubSearchForm(req.POST)
+        search_text = req.POST.get('search_text')
+        if len(search_text) > 0:
+            found_book_clubs = BookClub.objects.filter(
+                disbanded__isnull=True,
+                name__icontains=search_text,
+            ).exclude(publicity='PR')
+
+            return_dict['search_submitted'] = True
+            return_dict['results'] = found_book_clubs.all()
+
+    # Default to assuming GET functionality
+
+    return render(req, 'book_club/book_club_search.html', return_dict)
 
 
 @login_required
