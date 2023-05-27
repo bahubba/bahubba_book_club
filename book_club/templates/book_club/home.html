@@ -9,8 +9,22 @@
     <div class="row row-cols-3 px-2 justify-content-center overflow-hidden flex-grow-1">
         <div class="col p-2 h-100">
             <div class="p-2 pb-0 shadow rounded h-100 d-flex flex-column">
-                <div class="flex-grow-0 flex-shrink-1">
-                    <h4>My Clubs</h4>
+                <div class="flex-grow-0 flex-shrink-1 d-flex justify-content-start align-items-center hidden-hover-parent">
+                    <h4 class="m-0">My Clubs</h4>
+                    <a
+                        class="btn btn-sm btn-secondary rounded shadow-sm hidden-hover-child mx-1 ms-2"
+                        title="New club"
+                        href="{% url 'book_club:create_book_club' %}"
+                    >
+                        <span class="material-icons text-black-50 fs-5">add</span>
+                    </a>
+                    <a
+                        class="btn btn-sm btn-secondary rounded shadow-sm hidden-hover-child mx-1"
+                        title="Find club"
+                        href="{% url 'book_club:book_club_search' %}"
+                    >
+                        <span class="material-icons text-black-50 fs-5">search</span>
+                    </a>
                 </div>
                 {% if in_clubs %}
                     <div class="flex-grow-1 overflow-y-auto row row-cols-lg-2 row-cols-md-1">

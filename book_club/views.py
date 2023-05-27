@@ -1,15 +1,15 @@
-import traceback
 from typing import Optional
 
-from django.db import IntegrityError
-from django.shortcuts import get_object_or_404, redirect, render
+from django.db import IntegrityError, connection
+from django.db.models import Q
+from django.shortcuts import redirect, render
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 
-from .models import BookClub, Reader
-from .forms import BookClubForm, ReaderCreationForm
+from .models import BookClub, Reader, MembershipRequest
+from .forms import BookClubForm, ReaderCreationForm, BookClubSearchForm, MembershipRequestForm
 
 
 def register_reader(req):
@@ -145,31 +145,125 @@ def book_club_home(req, book_club_name):
     Home page for a given book club
     """
 
-    # Get the book club from the DB
-    book_club: Optional[BookClub]
+    return_dict = {}
+
+    # Get the book club and reader role
     try:
-        print(BookClub.objects.filter(
-            name=book_club_name,
-            disbanded__isnull=True,
-            readers__id=req.user.id,
-            bookclubreaders__left__isnull=True,
-        ).query)
         book_club = BookClub.objects.get(
+            Q(readers__id=req.user.id) | Q(publicity='PB'),
             name=book_club_name,
             disbanded__isnull=True,
-            readers__id=req.user.id,
             bookclubreaders__left__isnull=True,
         )
-    except BookClub.DoesNotExist:
-        book_club = None
+        return_dict['book_club'] = book_club
+        return_dict['reader_role'] = book_club.readers.get(id=req.user.id)
 
-    # If the reader isn't a member of the group, redirect
-    # TODO - redirect to current page instead of home
-    if book_club is None:
+    # If the reader isn't a member of the group or the group isn't public, redirect
+    except BookClub.DoesNotExist:
         return redirect('home')
 
+    except Reader.DoesNotExist:
+        return_dict['reader_role'] = None
+
+    # Get any open membership requests from the DB
+    try:
+        membership_requested = MembershipRequest.objects.filter(
+            reader_id=req.user.id,
+            book_club__name=book_club_name,
+            request_status__in=[MembershipRequest.RequestStatus.OPEN, MembershipRequest.RequestStatus.VIEWED]
+        ).count() > 0
+
+        return_dict['membership_requested'] = membership_requested
+    except MembershipRequest.DoesNotExist:
+        return_dict['membership_requested'] = False
+
+
     # TODO - Strip reader IDs from response
-    return render(req, 'book_club/book_club_home.html', {'book_club': book_club})
+    return render(req, 'book_club/book_club_home.html', return_dict)
+
+
+@login_required
+def book_club_search(req):
+    """
+    Search page and POST for finding book clubs
+    """
+
+    return_dict = {'form': BookClubSearchForm, 'search_submitted': False, 'results': []}
+
+    # Search for book clubs on POST
+    if req.method == 'POST':
+        return_dict['form'] = BookClubSearchForm(req.POST)
+        search_text = req.POST.get('search_text')
+        if len(search_text) > 0:
+            found_book_clubs = BookClub.objects.filter(
+                disbanded__isnull=True,
+                name__icontains=search_text,
+            ).exclude(publicity='PR')
+
+            return_dict['search_submitted'] = True
+            return_dict['results'] = found_book_clubs.all()
+
+    # Default to assuming GET functionality
+    return render(req, 'book_club/book_club_search.html', return_dict)
+
+
+@login_required
+def book_club_membership_request(req, book_club_name):
+    """
+    Book Club membership request page and POST
+    """
+
+    # Get the book club from the DB
+    try:
+        book_club = BookClub.objects.get(
+            ~Q(publicity='PR'),
+            ~Q(readers__id=req.user.id) | Q(bookclubreaders__left__isnull=False),
+            name=book_club_name,
+            disbanded__isnull=True,
+        )
+
+        # Check for an existing request
+        existing_request: Optional[MembershipRequest] = None
+        try:
+            existing_request = MembershipRequest.objects.get(reader_id=req.user.id, book_club__name=book_club_name)
+        except MembershipRequest.DoesNotExist:
+            pass
+
+        # On POST, persist a request
+        if req.method == 'POST':
+            form = MembershipRequestForm(req.POST)
+            membership_request: MembershipRequest = form.save(commit=False)
+
+            # If there's already an existing request, update it
+            if existing_request is not None:
+                existing_request.message = membership_request.message
+                existing_request.request_status = MembershipRequest.RequestStatus.OPEN
+                existing_request.save()
+
+            # Otherwise save a new request
+            else:
+                membership_request.reader = req.user
+                membership_request.book_club = book_club
+                membership_request.save()
+
+            return redirect('book_club:book_club_home', book_club_name=book_club_name)
+
+        # Default to assuming GET functionality
+        return render(
+            req,
+            'book_club/book_club_membership_request_form.html',
+            {
+                'form': MembershipRequestForm,
+                'book_club_name': book_club_name,
+                'membership_requested': existing_request is not None
+            }
+        )
+
+    # If the reader is a member of the group already or the group is private, redirect
+    except BookClub.DoesNotExist:
+        return redirect('book_club:book_club_home', book_club_name=book_club_name)
+
+
 
 
 @login_required

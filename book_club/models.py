@@ -86,6 +86,27 @@ class BookClubReaders(models.Model):
         unique_together = ('reader', 'book_club')
 
 
+# Membership Requests
+class MembershipRequest(models.Model):
+    class RequestStatus(models.TextChoices):
+        OPEN = 'OP', _('Open')
+        VIEWED = 'VW', _('Viewed')
+        ACCEPTED = 'AC', _('Accepted')
+        REJECTED = 'RJ', _('Rejected')
+
+    reader = models.ForeignKey(Reader, on_delete=models.DO_NOTHING)
+    book_club = models.ForeignKey(BookClub, on_delete=models.DO_NOTHING)
+    message = models.CharField(max_length=255)
+    request_status = models.CharField(
+        max_length=2,
+        choices=RequestStatus.choices,
+        default=RequestStatus.OPEN
+    )
+
+    class Meta:
+        unique_together = ('reader', 'book_club')
+
+
 # Authors
 class Author(models.Model):
     id = models.UUIDField(

@@ -7,10 +7,7 @@
     </div>
     <div class="row justify-content-center">
         <div class="col-md-8">
-            {% if error %}
-                <div class="alert alert-danger" role="alert">{{ error }}</div>
-            {% endif %}
-            {% include 'book_club/fragments/book_club_form.html' with button_text='Create Book Club' %}
+            {% include 'book_club/fragments/book_club_form.html' with button_text='Create Book Club' error=error %}
         </div>
     </div>
 {% endblock %}
