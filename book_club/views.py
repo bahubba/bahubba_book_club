@@ -313,8 +313,6 @@ def book_club_admin_members(req, book_club_name):
     if book_club is None:
         return redirect('home')
 
-    print('book_club:', book_club.bookclubreaders_set.all)
-
     return render(
         req,
         'book_club/book_club_admin.html',
