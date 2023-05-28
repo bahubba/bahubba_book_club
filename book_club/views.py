@@ -10,7 +10,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 
 from notifications.models import Notification
-from .models import BookClub, Reader, MembershipRequest
+from .models import BookClub, Reader, MembershipRequest, BookClubReaders
 from .forms import BookClubForm, ReaderCreationForm, BookClubSearchForm, MembershipRequestForm
 
 
@@ -174,6 +174,9 @@ def book_club_home(req, book_club_name):
     except BookClub.DoesNotExist:
         return redirect('home')
 
+    except BookClubReaders.DoesNotExist:
+        return_dict['reader_role'] = None
+
     except Reader.DoesNotExist:
         return_dict['reader_role'] = None
 
@@ -257,6 +260,14 @@ def book_club_membership_request(req, book_club_name):
                 membership_request.reader = req.user
                 membership_request.book_club = book_club
                 membership_request.save()
+
+            # Generate a notification about the request
+            notification = Notification(
+                source_reader=req.user,
+                book_club=book_club,
+                type=Notification.NotificationType.MEMBERSHIP_REQUESTED
+            )
+            notification.save()
 
             return redirect('book_club:book_club_home', book_club_name=book_club_name)
 

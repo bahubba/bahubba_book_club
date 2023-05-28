@@ -66,4 +66,5 @@ def link(req):
 
             return redirect(form.cleaned_data['redirect_url'])
 
-    # TODO - Default?
+    # TODO - Error message
+    return redirect('notifications:notifications')

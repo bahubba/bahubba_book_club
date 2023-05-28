@@ -1,5 +1,5 @@
 <td>
-    Welcome to the app, {% if user.given_name%}{{ user.given_name }}{% else %}{{ user.username }}{% endif %}! Click the link to create your first book club!
+    Welcome to the app, <b>{% if user.given_name%}{{ user.given_name }}{% else %}{{ user.username }}{% endif %}</b>! Click the link to create your first book club!
 </td>
 <td>
     <form method="POST" action="{% url 'notifications:link' %}">

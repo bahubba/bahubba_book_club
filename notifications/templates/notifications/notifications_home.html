@@ -21,6 +21,7 @@
                             <th scope="col">Read</th>
                             <th scope="col">Notification</th>
                             <th scope="col">Link</th>
+                            <th scope="col">Time</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -38,8 +39,12 @@
                                 </td>
                                 {% if notification.type == 'RG' %}
                                     {% include 'notifications/fragments/registration_notification.html' with notification_id=notification.id %}
+                                {% elif notification.type == 'MR' %}
+                                    {% include 'notifications/fragments/membership_request.html' with notification=notification %}
                                 {% endif %}
-
+                                <td>
+                                    {{ notification.generated }}
+                                </td>
                             </tr>
                         {% endfor %}
                     </tbody>
