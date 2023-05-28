@@ -1,0 +1,15 @@
+{# TODO - Make the reader's username a link to their Reader Page #}
+
+<td>
+    Reader <b>{{ notification.source_reader.username }}</b> requested to join {{ notification.book_club.name }}
+</td>
+<td>
+    <form method="POST" action="{% url 'notifications:link' %}">
+        {% csrf_token %}
+        <input type="hidden" name="notification_id" value="{{ notification.id }}" />
+        <input type="hidden" name="redirect_url" value="{% url 'book_club:book_club_admin' book_club_name=notification.book_club.name %}" />
+        <button type="submit" class="bg-white border-0">
+            <span class="material-icons text-black-50 fs-5">link</span>
+        </button>
+    </form>
+</td>
