@@ -1,6 +1,6 @@
 from typing import Optional
 
-from django.db import IntegrityError, connection
+from django.db import IntegrityError
 from django.db.models import Q
 from django.shortcuts import redirect, render
 from django.contrib.auth.forms import AuthenticationForm
@@ -156,7 +156,7 @@ def book_club_home(req, book_club_name):
             bookclubreaders__left__isnull=True,
         )
         return_dict['book_club'] = book_club
-        return_dict['reader_role'] = book_club.readers.get(id=req.user.id)
+        return_dict['reader_role'] = book_club.bookclubreaders_set.get(reader__id=req.user.id).club_role
 
     # If the reader isn't a member of the group or the group isn't public, redirect
     except BookClub.DoesNotExist:

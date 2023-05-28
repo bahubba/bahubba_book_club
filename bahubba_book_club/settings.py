@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django_sass',
     'book_club',
+    'notifications',
 ]
 
 MIDDLEWARE = [

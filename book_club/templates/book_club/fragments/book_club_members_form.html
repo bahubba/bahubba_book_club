@@ -40,12 +40,14 @@
                     <span><b>{{ reader_role.reader.given_name }} {{ reader_role.reader.surname }}</b></span>
                 </div>
                 <div class="col-1">
-                    <a
-                        href="{% url 'book_club:book_club_admin_remove_reader' book_club.name %}"
+                    {# TODO - change this to a form and submit button with POST type #}
+                    <button
+                        onclick="location.href='{% url 'book_club:book_club_admin_remove_reader' book_club.name %}'"
                         class="btn btn-danger"
+                        {% if reader_role.is_creator %}disabled{% endif %}
                     >
                         Remove
-                    </a>
+                    </button>
                 </div>
             </div>
         </li>

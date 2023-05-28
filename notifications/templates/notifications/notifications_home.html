@@ -1,0 +1,30 @@
+{% extends 'book_club/base.html' %}
+{% block content %}
+    <div class="row justify-content-center">
+        <div class="col-md-12">
+            <h2 class="p-2 m-0">Notifications</h2>
+        </div>
+    </div>
+    <div class="flex-grow-1 overflow-y-auto">
+        <div class="row justify-content-center">
+            <div class="col-8">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Read</th>
+                            <th scope="col">Notification</th>
+                            <th scope="col">Link</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="material-icons text-black-50 fs-5">mail</span></td>
+                            <td>Some text about a notification</td>
+                            <td><span class="material-icons text-black-50 fs-5">link</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}
