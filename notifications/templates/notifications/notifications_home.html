@@ -1,0 +1,50 @@
+{% extends 'book_club/base.html' %}
+
+{# TODO - Conditionally render/show only unviewed notifications #}
+{# TODO - Mark all as viewed #}
+
+{% block content %}
+    <div class="row justify-content-center">
+        <div class="col-md-12">
+            <h2 class="p-2 m-0">Notifications</h2>
+        </div>
+    </div>
+    <div class="flex-grow-1 overflow-y-auto">
+        <div class="row justify-content-center mx-0">
+            <div class="col-8 justify-content-end">
+
+            </div>
+            <div class="col-8">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Read</th>
+                            <th scope="col">Notification</th>
+                            <th scope="col">Link</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for notification in notifications %}
+                            <tr class="align-middle">
+                                <td>
+                                    <form method="POST" action="{% url 'notifications:toggle_viewed' notification_id=notification.id %}">
+                                        {% csrf_token %}
+                                        <button class="btn" type="submit">
+                                            <span class="material-icons text-black-50 fs-5">
+                                                {% if user in notification.viewed_by.all %}drafts{% else %}mail{% endif %}
+                                            </span>
+                                        </button>
+                                    </form>
+                                </td>
+                                {% if notification.type == 'RG' %}
+                                    {% include 'notifications/fragments/registration_notification.html' with notification_id=notification.id %}
+                                {% endif %}
+
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

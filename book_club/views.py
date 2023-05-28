@@ -1,6 +1,7 @@
+import uuid
 from typing import Optional
 
-from django.db import IntegrityError, connection
+from django.db import IntegrityError
 from django.db.models import Q
 from django.shortcuts import redirect, render
 from django.contrib.auth.forms import AuthenticationForm
@@ -8,6 +9,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 
+from notifications.models import Notification
 from .models import BookClub, Reader, MembershipRequest
 from .forms import BookClubForm, ReaderCreationForm, BookClubSearchForm, MembershipRequestForm
 
@@ -24,7 +26,7 @@ def register_reader(req):
     if req.method == 'POST':
         if req.POST['password1'] == req.POST['password2']:
             try:
-                # Create and persist the Reader (User)
+                # Create and persist the Reader (User) and log in
                 reader = Reader.objects.create_user(
                     username=req.POST['username'],
                     email=req.POST['email'],
@@ -34,6 +36,15 @@ def register_reader(req):
                 )
                 reader.save()
                 login(req, reader)
+
+                # Generate a welcome notification
+                notification = Notification(
+                    source_reader=req.user,
+                    target_reader=req.user,
+                    type=Notification.NotificationType.REGISTERED,
+                )
+                notification.save()
+
                 return redirect('home')
             except IntegrityError:
                 return_dict['error'] = 'Username or email has already been taken'
@@ -123,7 +134,8 @@ def create_book_club(req):
     if req.method == 'POST':
         try:
             form = BookClubForm(req.POST, req.FILES)
-            # TODO - See if generating UUID here allows for commit=False
+            # NOTE - Have to persist to get a PK before adding many-to-many related fields
+            #        even if you manually create a PK on instantiation... Not cool...
             new_book_club = form.save()
             new_book_club.readers.add(req.user, through_defaults={'club_role': 'AD', 'is_creator': True})
             new_book_club.save()
@@ -156,7 +168,7 @@ def book_club_home(req, book_club_name):
             bookclubreaders__left__isnull=True,
         )
         return_dict['book_club'] = book_club
-        return_dict['reader_role'] = book_club.readers.get(id=req.user.id)
+        return_dict['reader_role'] = book_club.bookclubreaders_set.get(reader__id=req.user.id).club_role
 
     # If the reader isn't a member of the group or the group isn't public, redirect
     except BookClub.DoesNotExist:
@@ -300,8 +312,6 @@ def book_club_admin_members(req, book_club_name):
     # TODO - Redirect to current page
     if book_club is None:
         return redirect('home')
-
-    print('book_club:', book_club.bookclubreaders_set.all)
 
     return render(
         req,

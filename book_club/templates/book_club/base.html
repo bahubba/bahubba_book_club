@@ -37,56 +37,67 @@
   </head>
   <body>
     <nav class="navbar navbar-expand-md navbar-light fixed-top bg-primary">
-      <div class="container mw-100">
-        <a class="navbar-brand" href="{% url 'home' %}">
-          <img
-            src="{% static 'book_club/favicon/favicon.ico' %}"
-            width="30"
-            height="30"
-            class="d-inline-block align-top"
-          />
-          <span class="text-secondary">BAHubba Book Club Manager</span>
-        </a>
-        <button
-          class="navbar-toggler"
-          type="button"
-          data-toggle="collapse"
-          data-target="#navbarNav"
-          aria-controls="navbarNav"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-        >
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav mr-auto">
-          {% if user.is_authenticated %}
-            <li class="nav-item {{ book_clubs }}">
-              <a class="nav-link" href="{% url 'book_club:book_clubs' %}">My Clubs</a>
-            </li>
-            <li class="nav-item">
-              <a href="#" onclick="$('#signOutBtn').click()" class="nav-link">
-                  Logout
-              </a>
-              <form
-                style="display: none"
-                method="POST"
-                action="{% url 'logout' %}"
-              >
-                {% csrf_token %}
-                <button id="signOutBtn" type="submit">Logout</button>
-              </form>
-            </li>
-            {% else %}
-            <li class="nav-item">
-              <a class="nav-link" href="{% url 'register' %}">Register</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="{% url 'login' %}">Login</a>
-            </li>
-            {% endif %}
-          </ul>
+      <div class="container mw-100 d-flex justify-content-between">
+        <div class="d-flex justify-content-start">
+            <a class="navbar-brand" href="{% url 'home' %}">
+              <img
+                src="{% static 'book_club/favicon/favicon.ico' %}"
+                width="30"
+                height="30"
+                class="d-inline-block align-top"
+              />
+              <span class="text-secondary">BAHubba Book Club Manager</span>
+            </a>
+            <button
+              class="navbar-toggler"
+              type="button"
+              data-toggle="collapse"
+              data-target="#navbarNav"
+              aria-controls="navbarNav"
+              aria-expanded="false"
+              aria-label="Toggle navigation"
+            >
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav mr-auto">
+              {% if user.is_authenticated %}
+                <li class="nav-item {{ book_clubs }}">
+                  <a class="nav-link" href="{% url 'book_club:book_clubs' %}">My Clubs</a>
+                </li>
+                <li class="nav-item">
+                  <a href="#" onclick="$('#signOutBtn').click()" class="nav-link">
+                      Logout
+                  </a>
+                  <form
+                    style="display: none"
+                    method="POST"
+                    action="{% url 'logout' %}"
+                  >
+                    {% csrf_token %}
+                    <button id="signOutBtn" type="submit">Logout</button>
+                  </form>
+                </li>
+                {% else %}
+                <li class="nav-item">
+                  <a class="nav-link" href="{% url 'register' %}">Register</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="{% url 'login' %}">Login</a>
+                </li>
+                {% endif %}
+              </ul>
+            </div>
         </div>
+        <a href="{% url 'notifications:notifications' %}">
+            <span class="material-icons text-black-50 fs-5 bg-secondary p-2 rounded-circle">
+                notifications
+                {# TODO - Show if there are new, unread notifications #}
+{#                <span class="position-absolute end-0 translate-middle p-2 bg-danger border border-light rounded-circle">#}
+{#                    <span class="visually-hidden">New alerts</span>#}
+{#                </span>#}
+            </span>
+        </a>
       </div>
     </nav>
 
