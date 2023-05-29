@@ -11,7 +11,8 @@ from django.utils import timezone
 
 from notifications.models import Notification
 from .models import BookClub, Reader, MembershipRequest, BookClubReaders
-from .forms import BookClubForm, ReaderCreationForm, BookClubSearchForm, MembershipRequestForm
+from .forms import BookClubForm, ReaderCreationForm, BookClubSearchForm, MembershipRequestForm, ApproveMembershipForm, \
+    DenyMembershipForm
 
 
 def register_reader(req):
@@ -160,38 +161,39 @@ def book_club_home(req, book_club_name):
     return_dict = {}
 
     # Get the book club and reader role
+    # TODO - See if we can query for the book club and check publicity OR user having role in one query
     try:
         book_club = BookClub.objects.get(
-            Q(readers__id=req.user.id) | Q(publicity='PB'),
             name=book_club_name,
             disbanded__isnull=True,
-            bookclubreaders__left__isnull=True,
         )
-        return_dict['book_club'] = book_club
-        return_dict['reader_role'] = book_club.bookclubreaders_set.get(reader__id=req.user.id).club_role
 
-    # If the reader isn't a member of the group or the group isn't public, redirect
+        # Ensure that the reader has a role in the club or the club is public
+        try:
+            return_dict['reader_role'] = book_club.bookclubreaders_set.get(reader__id=req.user.id, left__isnull=True).club_role
+        except BookClubReaders.DoesNotExist:
+            if book_club.publicity != 'PB':
+                return redirect('home')
+            else:
+                return_dict['reader_role'] = None
+
+        return_dict['book_club'] = book_club
+
+    # If the book club doesn't exist, redirect
     except BookClub.DoesNotExist:
         return redirect('home')
-
-    except BookClubReaders.DoesNotExist:
-        return_dict['reader_role'] = None
-
-    except Reader.DoesNotExist:
-        return_dict['reader_role'] = None
 
     # Get any open membership requests from the DB
     try:
         membership_requested = MembershipRequest.objects.filter(
             reader_id=req.user.id,
             book_club__name=book_club_name,
-            request_status__in=[MembershipRequest.RequestStatus.OPEN, MembershipRequest.RequestStatus.VIEWED]
+            status__in=[MembershipRequest.RequestStatus.OPEN, MembershipRequest.RequestStatus.VIEWED]
         ).count() > 0
 
         return_dict['membership_requested'] = membership_requested
     except MembershipRequest.DoesNotExist:
         return_dict['membership_requested'] = False
-
 
     # TODO - Strip reader IDs from response
     return render(req, 'book_club/book_club_home.html', return_dict)
@@ -232,10 +234,17 @@ def book_club_membership_request(req, book_club_name):
     try:
         book_club = BookClub.objects.get(
             ~Q(publicity='PR'),
-            ~Q(readers__id=req.user.id) | Q(bookclubreaders__left__isnull=False),
             name=book_club_name,
-            disbanded__isnull=True,
+            disbanded__isnull=True
         )
+
+        # Check to see if the reader is already a member
+        try:
+            membership = book_club.bookclubreaders_set.get(reader_id=req.user.id)
+            if membership:
+                return redirect('home')
+        except BookClubReaders.DoesNotExist:
+            pass
 
         # Check for an existing request
         existing_request: Optional[MembershipRequest] = None
@@ -252,7 +261,7 @@ def book_club_membership_request(req, book_club_name):
             # If there's already an existing request, update it
             if existing_request is not None:
                 existing_request.message = membership_request.message
-                existing_request.request_status = MembershipRequest.RequestStatus.OPEN
+                existing_request.status = MembershipRequest.RequestStatus.OPEN
                 existing_request.save()
 
             # Otherwise save a new request
@@ -287,8 +296,6 @@ def book_club_membership_request(req, book_club_name):
         return redirect('book_club:book_club_home', book_club_name=book_club_name)
 
 
-
-
 @login_required
 def book_club_admin(req, book_club_name):
     """
@@ -306,7 +313,7 @@ def book_club_admin(req, book_club_name):
     return render(
         req,
         'book_club/book_club_admin.html',
-        {'book_club': book_club, 'title': f'Manage {book_club_name} Details', 'section': 'details'},
+        {'book_club': book_club, 'title_suffix': 'Details', 'section': 'details'},
     )
 
 
@@ -330,9 +337,37 @@ def book_club_admin_members(req, book_club_name):
         {
             # TODO - filter readers to only those who haven't left
             'book_club': book_club,
-            'title': f'Manage {book_club_name} Members',
+            'title_suffix': 'Members',
             'section': 'members',
         },
+    )
+
+
+@login_required
+def book_club_admin_membership_requests(req, book_club_name):
+    """
+    Approve or deny membership requests
+    """
+
+    # Get the book club from the DB
+    book_club = __get_admin_club_or_none(book_club_name, req.user.id)
+
+    # If not an admin, redirect to home
+    if book_club is None:
+        return redirect('home')
+
+    # Get membership requests for the book club
+    requests = MembershipRequest.objects.filter(book_club__id=book_club.id)
+
+    return render(
+        req,
+        'book_club/book_club_admin.html',
+        {
+            'book_club': book_club,
+            'title_suffix': 'Membership Requests',
+            'section': 'membership_requests',
+            'requests': requests
+        }
     )
 
 
@@ -355,7 +390,7 @@ def book_club_admin_prefs(req, book_club_name):
         'book_club/book_club_admin.html',
         {
             'book_club': book_club,
-            'title': f'Manage {book_club_name} Preferences',
+            'title_suffix': 'Preferences',
             'section': 'prefs',
         }
     )
@@ -369,6 +404,73 @@ def book_club_admin_change_role(req, book_club_name):
 @login_required
 def book_club_admin_remove_reader(req, book_club_name):
     pass
+
+
+@login_required
+def book_club_admin_approve_new_reader(req, book_club_name):
+    """
+    Add the requesting reader to the book club
+    """
+
+    if req.method == 'POST':
+        # Get the book club from the DB, which the authenticated user must be an admin of
+        book_club = __get_admin_club_or_none(book_club_name, req.user.id)
+
+        # If not an admin, redirect to home
+        # TODO - Redirect to current page
+        if book_club is None:
+            return redirect('home')
+
+        # Get the new reader's ID and their new role from the form
+        form = ApproveMembershipForm(req.POST)
+        if form.is_valid():
+            # Get the new reader from the DB and add them to the book club
+            new_reader = Reader.objects.get(id=form.cleaned_data['reader_id'])
+            book_club.readers.add(new_reader, through_defaults={'club_role': form.cleaned_data['club_role']})
+            book_club.save()
+
+            # Get the membership request and mark it as approved
+            __evaluate_membership_request(
+                reader_id=form.cleaned_data['reader_id'],
+                book_club=book_club,
+                evaluator=req.user,
+                status=MembershipRequest.RequestStatus.ACCEPTED
+            )
+
+            return redirect('book_club:book_club_admin_membership_requests', book_club_name=book_club_name)
+        else:
+            return redirect('home')
+
+
+@login_required
+def book_club_admin_reject_new_reader(req, book_club_name):
+    """
+    Deny the requesting reader access to the book club
+    """
+
+    if req.method == 'POST':
+        # Get the book club from the DB, which the authenticated user must be an admin of
+        book_club = __get_admin_club_or_none(book_club_name, req.user.id)
+
+        # If not an admin, redirect to home
+        # TODO - Redirect to current page
+        if book_club is None:
+            return redirect('home')
+
+        # Get the new reader's ID and their new role from the form
+        form = DenyMembershipForm(req.POST)
+        if form.is_valid():
+            # Get the membership request and mark it as rejected
+            __evaluate_membership_request(
+                reader_id=form.cleaned_data['reader_id'],
+                book_club=book_club,
+                evaluator=req.user,
+                status=MembershipRequest.RequestStatus.REJECTED
+            )
+
+            return redirect('book_club:book_club_admin_membership_requests', book_club_name=book_club_name)
+        else:
+            return redirect('home')
 
 
 @login_required
@@ -407,3 +509,13 @@ def __get_admin_club_or_none(book_club_name, user_id):
         book_club = None
 
     return book_club
+
+
+def __evaluate_membership_request(reader_id, book_club, evaluator, status):
+    membership_request = MembershipRequest.objects.get(
+        reader_id=reader_id, book_club=book_club
+    )
+    membership_request.status = status
+    membership_request.evaluator = evaluator
+    membership_request.evaluated = timezone.now()
+    membership_request.save()

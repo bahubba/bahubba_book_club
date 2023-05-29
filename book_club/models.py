@@ -94,14 +94,17 @@ class MembershipRequest(models.Model):
         ACCEPTED = 'AC', _('Accepted')
         REJECTED = 'RJ', _('Rejected')
 
-    reader = models.ForeignKey(Reader, on_delete=models.DO_NOTHING)
+    reader = models.ForeignKey(Reader, on_delete=models.DO_NOTHING, related_name='requestor')
     book_club = models.ForeignKey(BookClub, on_delete=models.DO_NOTHING)
     message = models.CharField(max_length=255)
-    request_status = models.CharField(
+    status = models.CharField(
         max_length=2,
         choices=RequestStatus.choices,
         default=RequestStatus.OPEN
     )
+    evaluator = models.ForeignKey(Reader, on_delete=models.DO_NOTHING, related_name='evaluator', null=True)
+    requested = models.DateTimeField(default=timezone.now)
+    evaluated = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         unique_together = ('reader', 'book_club')

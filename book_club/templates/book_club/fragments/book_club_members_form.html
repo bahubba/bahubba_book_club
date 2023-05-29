@@ -2,13 +2,13 @@
     <li class="list-group-item">
         <div class="row">
             <div class="col-4">
-                <h4>Role</h4>
+                <h5>Role</h5>
             </div>
             <div class="col-7">
-                <h4>Name</h4>
+                <h5>Name</h5>
             </div>
             <div class="col-1">
-                <h4>Remove</h4>
+                <h5>Remove</h5>
             </div>
         </div>
     </li>
@@ -20,8 +20,8 @@
                         method="POST"
                         action="{% url 'book_club:book_club_admin_change_role' book_club.name %}"
                     >
-                        <input class="d-none" type="text" disabled value="{{ book_club.id }}" />
-                        <input class="d-none" type="text" disabled value="{{ reader_role.reader.id }}" />
+                        <input type="hidden" disabled value="{{ book_club.id }}" />
+                        <input type="hidden" disabled value="{{ reader_role.reader.id }}" />
                         <select
                             class="form-select"
                             aria-label="Book Club Reader Role"
