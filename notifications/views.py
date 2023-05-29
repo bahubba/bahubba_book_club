@@ -21,7 +21,7 @@ def notifications_home(req):
 
     # Get notifications for the reader
     notifications = Notification.objects.filter(
-        Q(book_club__in=admin_book_clubs.all()) | Q(target_reader__id=req.user.id),
+        (Q(book_club__in=admin_book_clubs.all()) & Q(target_reader__isnull=True)) | Q(target_reader__id=req.user.id),
     ).order_by('-generated')
 
     return render(req, 'notifications/notifications_home.html', {'notifications': notifications})

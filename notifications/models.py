@@ -1,7 +1,8 @@
 import uuid
 
+from datetime import datetime
+
 from django.db import models
-from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from book_club.models import Reader, BookClub
@@ -28,10 +29,10 @@ class Notification(models.Model):
     )
     action_link = models.URLField(null=True, blank=True)
     viewed_by = models.ManyToManyField(Reader, through='NotificationViews', related_name='viewed_by')
-    generated = models.DateTimeField(default=timezone.now)
+    generated = models.DateTimeField(default=datetime.now)
 
 
 class NotificationViews(models.Model):
     notification = models.ForeignKey(Notification, on_delete=models.DO_NOTHING)
     reader = models.ForeignKey(Reader, on_delete=models.DO_NOTHING)
-    viewed_at = models.DateTimeField(default=timezone.now)
+    viewed_at = models.DateTimeField(default=datetime.now)

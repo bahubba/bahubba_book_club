@@ -1,9 +1,9 @@
-import datetime
 import uuid
+from datetime import datetime
+
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.core.validators import MinValueValidator, MaxValueValidator
-from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from book_club.managers import ReaderManager
@@ -28,7 +28,7 @@ class Reader(AbstractBaseUser, PermissionsMixin):
     suffix = models.CharField(max_length=15, null=True)
     title = models.CharField(max_length=15, null=True)
     email = models.EmailField(unique=True, null=False)
-    joined = models.DateTimeField(default=timezone.now)
+    joined = models.DateTimeField(default=datetime.now)
     left = models.DateTimeField(null=True, blank=True)
     is_active = models.BooleanField(default=True)
 
@@ -57,7 +57,7 @@ class BookClub(models.Model):
     name = models.CharField(max_length=100, null=False, unique=True)
     image = models.ImageField(upload_to='images/', null=True, blank=True)
     description = models.CharField(max_length=255, null=True, blank=True)
-    created = models.DateTimeField(default=timezone.now)
+    created = models.DateTimeField(default=datetime.now)
     disbanded = models.DateTimeField(null=True, blank=True)
     readers = models.ManyToManyField(Reader, through='BookClubReaders')
     publicity = models.CharField(max_length=2, choices=Publicity.choices, default=Publicity.PUBLIC)
@@ -79,7 +79,7 @@ class BookClubReaders(models.Model):
         default=RoleInClub.READER
     )
     is_creator = models.BooleanField(default=False)
-    joined = models.DateTimeField(default=timezone.now)
+    joined = models.DateTimeField(default=datetime.now)
     left = models.DateTimeField(null=True, blank=True)
 
     class Meta:
@@ -103,7 +103,7 @@ class MembershipRequest(models.Model):
         default=RequestStatus.OPEN
     )
     evaluator = models.ForeignKey(Reader, on_delete=models.DO_NOTHING, related_name='evaluator', null=True)
-    requested = models.DateTimeField(default=timezone.now)
+    requested = models.DateTimeField(default=datetime.now)
     evaluated = models.DateTimeField(null=True, blank=True)
 
     class Meta:
@@ -122,7 +122,7 @@ class Author(models.Model):
     title = models.CharField(max_length=15, null=True)
     display_name = models.CharField(max_length=300, null=False)
     birth_year = models.SmallIntegerField(
-        null=True, validators=[MaxValueValidator(datetime.date.today().year)]
+        null=True, validators=[MaxValueValidator(datetime.today().year)]
     )
     birth_month = models.SmallIntegerField(
         null=True, validators=[MinValueValidator(1), MaxValueValidator(12)]
@@ -131,7 +131,7 @@ class Author(models.Model):
         null=True, validators=[MinValueValidator(1), MaxValueValidator(31)]
     )
     death_year = models.SmallIntegerField(
-        null=True, validators=[MaxValueValidator(datetime.date.today().year)]
+        null=True, validators=[MaxValueValidator(datetime.today().year)]
     )
     death_month = models.SmallIntegerField(
         null=True, validators=[MinValueValidator(1), MaxValueValidator(12)]
@@ -163,7 +163,7 @@ class Book(models.Model):
     )
     title = models.CharField(max_length=200, null=False)
     published_year = models.SmallIntegerField(
-        null=True, validators=[MaxValueValidator(datetime.date.today().year)]
+        null=True, validators=[MaxValueValidator(datetime.today().year)]
     )
     published_month = models.SmallIntegerField(
         null=True, validators=[MinValueValidator(1), MaxValueValidator(12)]

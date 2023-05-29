@@ -41,6 +41,10 @@
                                     {% include 'notifications/fragments/registration_notification.html' with notification_id=notification.id %}
                                 {% elif notification.type == 'MR' %}
                                     {% include 'notifications/fragments/membership_request.html' with notification=notification %}
+                                {% elif notification.type == 'MA' or notification.type == 'MD' %}
+                                    {% include 'notifications/fragments/membership_evaluated.html' with notification=notification %}
+                                {% elif notification.type == 'NR' %}
+                                    {% include 'notifications/fragments/new_club_member.html' with notification=notification %}
                                 {% endif %}
                                 <td>
                                     {{ notification.generated }}
