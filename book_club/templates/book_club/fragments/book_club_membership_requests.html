@@ -1,0 +1,69 @@
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col"><h5>Reader</h5></th>
+            <th scope="col"><h5>Message</h5></th>
+            <th scope="col"><h5>Approve</h5></th>
+            <th scope="col" class="text-center"><h5>Deny</h5></th>
+            <th scope="col" class="text-center"></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for request in requests %}
+            <tr class="align-middle {% if request.status == 'AC' %}table-success{% elif request.status == 'RJ' %}table-danger{% endif %}">
+                <td>{{ request.reader.username }}</td>
+                <td>{{ request.message }}</td>
+                <td>
+                    {% if request.status == 'OP' %}
+                        <form
+                            method="POST"
+                            action="{% url 'book_club:book_club_admin_approve_new_reader' book_club.name %}"
+                        >
+                            {% csrf_token %}
+                            <input type="hidden" name="reader_id" value="{{ request.reader.id }}" />
+                            <div class="d-flex justify-content-between">
+                                <select
+                                    class="form-select"
+                                    name="club_role"
+                                    aria-label="Membership Request Approval Role"
+                                >
+                                    <option value="AD">Admin</option>
+                                    <option value="PT">Participant</option>
+                                    <option value="RD" selected>Reader</option>
+                                    {% if book_club.publicity != 'private' %}
+                                        <option value="OB">Observer</option>
+                                    {% endif %}
+                                </select>
+                                <button type="submit" class="btn btn-success ms-md-2">
+                                    <span class="material-icons text-secondary fs-5">how_to_reg</span>
+                                </button>
+                            </div>
+                        </form>
+                    {% elif request.status == 'AC' %}
+                        <span>Approved by {{ request.evaluator.username }}</span>
+                    {% else %}
+                        <span>Rejected by {{ request.evaluator.username }}</span>
+                    {% endif %}
+                </td>
+                <td class="text-center">
+                    {% if request.status == 'OP' %}
+                        <form method="POST" action="{% url 'book_club:book_club_admin_reject_new_reader' book_club.name %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="reader_id" value="{{ request.reader.id }}" />
+                            <button type="submit" class="btn btn-danger">
+                                <span class="material-icons text-black fs-5">cancel</span>
+                            </button>
+                        </form>
+                    {% endif %}
+                </td>
+                <td class="text-center">
+                    {% if request.status == 'OP' %}
+                        {{ request.requested }}
+                    {% else %}
+                        {{ request.evaluated }}
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>

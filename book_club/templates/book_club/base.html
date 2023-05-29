@@ -89,15 +89,22 @@
               </ul>
             </div>
         </div>
-        <a href="{% url 'notifications:notifications' %}">
-            <span class="material-icons text-black-50 fs-5 bg-secondary p-2 rounded-circle">
-                notifications
-                {# TODO - Show if there are new, unread notifications #}
-{#                <span class="position-absolute end-0 translate-middle p-2 bg-danger border border-light rounded-circle">#}
-{#                    <span class="visually-hidden">New alerts</span>#}
-{#                </span>#}
-            </span>
-        </a>
+        <div class="d-flex justify-content-end">
+            {% if user.is_authenticated %}
+                <span class="me-4 d-flex align-items-center text-secondary fst-italic">
+                    Welcome, {% if user.given_name %}{{ user.given_name }}{% else %}{{ user.username }}{% endif %}
+                </span>
+            {% endif %}
+            <a href="{% url 'notifications:notifications' %}">
+                <span class="material-icons text-black-50 fs-5 bg-secondary p-2 rounded-circle">
+                    notifications
+                    {# TODO - Show if there are new, unread notifications #}
+    {#                <span class="position-absolute end-0 translate-middle p-2 bg-danger border border-light rounded-circle">#}
+    {#                    <span class="visually-hidden">New alerts</span>#}
+    {#                </span>#}
+                </span>
+            </a>
+        </div>
       </div>
     </nav>
 
