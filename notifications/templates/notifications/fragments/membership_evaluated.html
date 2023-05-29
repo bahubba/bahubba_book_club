@@ -1,0 +1,18 @@
+<td>
+    Your request to join {{ notification.book_club.name }} was
+    <span class="fw-bold text-{% if notification.type == 'MA' %}success{% else %}danger{% endif %}">
+        {% if notification.type == 'MA' %}approved{% else %}denied{% endif %}
+    </span>
+</td>
+<td>
+    {% if notification.type == 'MA' %}
+        <form method="POST" action="{% url 'notifications:link' %}">
+            {% csrf_token %}
+            <input type="hidden" name="notification_id" value="{{ notification.id }}" />
+            <input type="hidden" name="redirect_url" value="{% url 'book_club:book_club_home' notification.book_club.name %}" />
+            <button type="submit" class="bg-white border-0">
+                <span class="material-icons text-black-50 fs-5">link</span>
+            </button>
+        </form>
+    {% endif %}
+</td>

@@ -1,4 +1,4 @@
-import uuid
+from datetime import datetime
 from typing import Optional
 
 from django.db import IntegrityError
@@ -7,7 +7,6 @@ from django.shortcuts import redirect, render
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from django.utils import timezone
 
 from notifications.models import Notification
 from .models import BookClub, Reader, MembershipRequest, BookClubReaders
@@ -437,6 +436,23 @@ def book_club_admin_approve_new_reader(req, book_club_name):
                 status=MembershipRequest.RequestStatus.ACCEPTED
             )
 
+            # Generate notifications
+            notifications = [
+                Notification(
+                    source_reader=req.user,
+                    target_reader=new_reader,
+                    book_club=book_club,
+                    type=Notification.NotificationType.MEMBERSHIP_ACCEPTED
+                ),
+                Notification(
+                    source_reader=new_reader,
+                    book_club=book_club,
+                    type=Notification.NotificationType.NEW_READER
+                ),
+            ]
+
+            Notification.objects.bulk_create(notifications)
+
             return redirect('book_club:book_club_admin_membership_requests', book_club_name=book_club_name)
         else:
             return redirect('home')
@@ -468,6 +484,16 @@ def book_club_admin_reject_new_reader(req, book_club_name):
                 status=MembershipRequest.RequestStatus.REJECTED
             )
 
+            # Generate notification
+            rejected_reader = Reader.objects.get(id=form.cleaned_data['reader_id'])
+            notification = Notification(
+                source_reader=req.user,
+                target_reader=rejected_reader,
+                book_club=book_club,
+                type=Notification.NotificationType.MEMBERSHIP_DECLINED,
+            )
+            notification.save()
+
             return redirect('book_club:book_club_admin_membership_requests', book_club_name=book_club_name)
         else:
             return redirect('home')
@@ -489,7 +515,7 @@ def book_club_admin_disband(req, book_club_name):
         return redirect('home')
 
     # Set the book club to disbanded and redirect to home
-    book_club.disbanded = timezone.now()
+    book_club.disbanded = datetime.now()
     book_club.save()
 
     return redirect('home')
@@ -517,5 +543,5 @@ def __evaluate_membership_request(reader_id, book_club, evaluator, status):
     )
     membership_request.status = status
     membership_request.evaluator = evaluator
-    membership_request.evaluated = timezone.now()
+    membership_request.evaluated = datetime.now()
     membership_request.save()
