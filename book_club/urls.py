@@ -28,6 +28,21 @@ urlpatterns = [
         name='book_club_admin_remove_reader'
     ),
     path(
+        '<str:book_club_name>/admin/membership-requests',
+        views.book_club_admin_membership_requests,
+        name='book_club_admin_membership_requests'
+    ),
+    path(
+        '<str:book_club_name>/admin/membership-requests/approve',
+        views.book_club_admin_approve_new_reader,
+        name='book_club_admin_approve_new_reader'
+    ),
+    path(
+        '<str:book_club_name>/admin/membership-requests/deny',
+        views.book_club_admin_reject_new_reader,
+        name='book_club_admin_reject_new_reader'
+    ),
+    path(
         '<str:book_club_name>/admin/disband',
         views.book_club_admin_disband,
         name='book_club_admin_disband'

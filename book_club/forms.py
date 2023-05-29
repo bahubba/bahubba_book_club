@@ -1,5 +1,5 @@
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
-from django.forms import CharField, Form, ModelForm, Textarea, TextInput, HiddenInput
+from django.forms import CharField, ChoiceField, Form, ModelForm, Textarea, TextInput, HiddenInput, Select, UUIDField
 
 from .models import BookClub, Reader, MembershipRequest
 
@@ -47,3 +47,20 @@ class MembershipRequestForm(ModelForm):
         model = MembershipRequest
         fields = ['message', ]
         widgets = {'message': Textarea}
+
+
+class ApproveMembershipForm(Form):
+    reader_id = UUIDField(
+        widget=HiddenInput
+    )
+    club_role = ChoiceField(
+        choices=(
+            ('AD', 'Admin'), ('PT', 'Participant'), ('RD', 'Reader'), ('OB', 'Observer')
+        )
+    )
+
+
+class DenyMembershipForm(Form):
+    reader_id = UUIDField(
+        widget=HiddenInput
+    )

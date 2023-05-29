@@ -2,7 +2,9 @@
 {% block content %}
     <div class="row justify-content-center">
         <div class="col-md-12">
-            <h2 class="p-2 m-0">{{ title }}</h2>
+            <h2 class="p-2 m-0">
+                Manage <span class="text-secondary fw-bold fst-italic">{{ book_club.name }}</span> {{ title_suffix }}
+            </h2>
         </div>
     </div>
     <div class="row justify-content-center p-2">
@@ -19,6 +21,12 @@
                     class="list-group-item {% if section == 'members' %} bg-secondary {% endif %}"
                 >
                     Members
+                </a>
+                <a
+                    href="{% url 'book_club:book_club_admin_membership_requests' book_club.name %}"
+                    class="list-group-item {% if section == 'membership_requests' %} bg-secondary {% endif %}"
+                >
+                    Membership Requests
                 </a>
                 <a
                     href="{% url 'book_club:book_club_admin_prefs' book_club.name %}"
@@ -39,6 +47,8 @@
                 {% include 'book_club/fragments/book_club_form.html' with button_text='Update Book Club' %}
             {% elif section == 'members' %}
                 {% include 'book_club/fragments/book_club_members_form.html' with book_club=book_club error=error %}
+            {% elif section == 'membership_requests' %}
+                {% include 'book_club/fragments/book_club_membership_requests.html' with book_club=book_club requests=requests %}
             {% elif section == 'prefs' %}
                 {% include 'book_club/fragments/book_club_preferences_form.html' %}
             {% endif %}
