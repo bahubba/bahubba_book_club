@@ -1,7 +1,7 @@
 {% load static %}
 <div
     class="card shadow-sm clickable"
-    onclick="location.href='{% url 'book_club:book_club_home' book_club.name %}'"
+    onclick="location.href='{% url 'book_club:book_club_home' book_club.name|urlencode %}'"
     title="{{ book_club.description|default:'A book club for reading books!' }}"
 >
     {# TODO - Figure out a better way to check and default with no image #}
