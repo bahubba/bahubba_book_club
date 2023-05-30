@@ -17,7 +17,7 @@
                     {% if request.status == 'OP' %}
                         <form
                             method="POST"
-                            action="{% url 'book_club:book_club_admin_approve_new_reader' book_club.name|urlencode %}"
+                            action="{% url 'book_club:book_club_admin_approve_new_reader' book_club.name %}"
                         >
                             {% csrf_token %}
                             <input type="hidden" name="reader_id" value="{{ request.reader.id }}" />
@@ -47,7 +47,7 @@
                 </td>
                 <td class="text-center">
                     {% if request.status == 'OP' %}
-                        <form method="POST" action="{% url 'book_club:book_club_admin_reject_new_reader' book_club.name|urlencode %}">
+                        <form method="POST" action="{% url 'book_club:book_club_admin_reject_new_reader' book_club.name %}">
                             {% csrf_token %}
                             <input type="hidden" name="reader_id" value="{{ request.reader.id }}" />
                             <button type="submit" class="btn btn-danger">
