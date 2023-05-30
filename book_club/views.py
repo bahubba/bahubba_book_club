@@ -1,5 +1,6 @@
 from datetime import datetime
 from typing import Optional
+from urllib.parse import unquote
 
 from django.db import IntegrityError
 from django.db.models import Q
@@ -157,19 +158,24 @@ def book_club_home(req, book_club_name):
     Home page for a given book club
     """
 
+    # Decode the book_club_name
+    d_book_club_name = unquote(book_club_name)
+
     return_dict = {}
 
     # Get the book club and reader role
     # TODO - See if we can query for the book club and check publicity OR user having role in one query
     try:
         book_club = BookClub.objects.get(
-            name=book_club_name,
+            name=d_book_club_name,
             disbanded__isnull=True,
         )
 
         # Ensure that the reader has a role in the club or the club is public
         try:
-            return_dict['reader_role'] = book_club.bookclubreaders_set.get(reader__id=req.user.id, left__isnull=True).club_role
+            return_dict['reader_role'] = book_club.bookclubreaders_set.get(
+                reader__id=req.user.id, left__isnull=True
+            ).club_role
         except BookClubReaders.DoesNotExist:
             if book_club.publicity != 'PB':
                 return redirect('home')
@@ -186,7 +192,7 @@ def book_club_home(req, book_club_name):
     try:
         membership_requested = MembershipRequest.objects.filter(
             reader_id=req.user.id,
-            book_club__name=book_club_name,
+            book_club__name=d_book_club_name,
             status__in=[MembershipRequest.RequestStatus.OPEN, MembershipRequest.RequestStatus.VIEWED]
         ).count() > 0
 
@@ -229,11 +235,14 @@ def book_club_membership_request(req, book_club_name):
     Book Club membership request page and POST
     """
 
+    # Decode the book_club_name
+    d_book_club_name = unquote(book_club_name)
+
     # Get the book club from the DB
     try:
         book_club = BookClub.objects.get(
             ~Q(publicity='PR'),
-            name=book_club_name,
+            name=d_book_club_name,
             disbanded__isnull=True
         )
 
@@ -248,7 +257,7 @@ def book_club_membership_request(req, book_club_name):
         # Check for an existing request
         existing_request: Optional[MembershipRequest] = None
         try:
-            existing_request = MembershipRequest.objects.get(reader_id=req.user.id, book_club__name=book_club_name)
+            existing_request = MembershipRequest.objects.get(reader_id=req.user.id, book_club__name=d_book_club_name)
         except MembershipRequest.DoesNotExist:
             pass
 
@@ -277,7 +286,7 @@ def book_club_membership_request(req, book_club_name):
             )
             notification.save()
 
-            return redirect('book_club:book_club_home', book_club_name=book_club_name)
+            return redirect('book_club:book_club_home', book_club_name=d_book_club_name)
 
         # Default to assuming GET functionality
         return render(
@@ -285,14 +294,14 @@ def book_club_membership_request(req, book_club_name):
             'book_club/book_club_membership_request_form.html',
             {
                 'form': MembershipRequestForm,
-                'book_club_name': book_club_name,
+                'book_club_name': d_book_club_name,
                 'membership_requested': existing_request is not None
             }
         )
 
     # If the reader is a member of the group already or the group is private, redirect
     except BookClub.DoesNotExist:
-        return redirect('book_club:book_club_home', book_club_name=book_club_name)
+        return redirect('book_club:book_club_home', book_club_name=d_book_club_name)
 
 
 @login_required
@@ -301,8 +310,11 @@ def book_club_admin(req, book_club_name):
     Base admin page for managing a book club
     """
 
+    # Decode book_club_name
+    d_book_club_name = unquote(book_club_name)
+
     # Get the book club from the DB
-    book_club = __get_admin_club_or_none(book_club_name, req.user.id)
+    book_club = __get_admin_club_or_none(d_book_club_name, req.user.id)
 
     # If not an admin, redirect to home
     # TODO - Redirect to current page
@@ -322,8 +334,11 @@ def book_club_admin_members(req, book_club_name):
     Manage membership for book club
     """
 
+    # Decode book_club_name
+    d_book_club_name = unquote(book_club_name)
+
     # Get the book club from the DB
-    book_club = __get_admin_club_or_none(book_club_name, req.user.id)
+    book_club = __get_admin_club_or_none(d_book_club_name, req.user.id)
 
     # If not an admin, redirect to home
     # TODO - Redirect to current page
@@ -348,8 +363,11 @@ def book_club_admin_membership_requests(req, book_club_name):
     Approve or deny membership requests
     """
 
+    # Decode book_club_name
+    d_book_club_name = unquote(book_club_name)
+
     # Get the book club from the DB
-    book_club = __get_admin_club_or_none(book_club_name, req.user.id)
+    book_club = __get_admin_club_or_none(d_book_club_name, req.user.id)
 
     # If not an admin, redirect to home
     if book_club is None:
@@ -376,8 +394,11 @@ def book_club_admin_prefs(req, book_club_name):
     Manage book club preferences
     """
 
+    # Decode book_club_name
+    d_book_club_name = unquote(book_club_name)
+
     # Get the book club from the DB
-    book_club = __get_admin_club_or_none(book_club_name, req.user.id)
+    book_club = __get_admin_club_or_none(d_book_club_name, req.user.id)
 
     # If not an admin, redirect to home
     # TODO - Redirect to current page
@@ -411,9 +432,12 @@ def book_club_admin_approve_new_reader(req, book_club_name):
     Add the requesting reader to the book club
     """
 
+    # Decode book_club_name
+    d_book_club_name = unquote(book_club_name)
+
     if req.method == 'POST':
         # Get the book club from the DB, which the authenticated user must be an admin of
-        book_club = __get_admin_club_or_none(book_club_name, req.user.id)
+        book_club = __get_admin_club_or_none(d_book_club_name, req.user.id)
 
         # If not an admin, redirect to home
         # TODO - Redirect to current page
@@ -453,7 +477,7 @@ def book_club_admin_approve_new_reader(req, book_club_name):
 
             Notification.objects.bulk_create(notifications)
 
-            return redirect('book_club:book_club_admin_membership_requests', book_club_name=book_club_name)
+            return redirect('book_club:book_club_admin_membership_requests', book_club_name=d_book_club_name)
         else:
             return redirect('home')
 
@@ -464,9 +488,12 @@ def book_club_admin_reject_new_reader(req, book_club_name):
     Deny the requesting reader access to the book club
     """
 
+    # Decode book_club_name
+    d_book_club_name = unquote(book_club_name)
+
     if req.method == 'POST':
         # Get the book club from the DB, which the authenticated user must be an admin of
-        book_club = __get_admin_club_or_none(book_club_name, req.user.id)
+        book_club = __get_admin_club_or_none(d_book_club_name, req.user.id)
 
         # If not an admin, redirect to home
         # TODO - Redirect to current page
@@ -494,7 +521,7 @@ def book_club_admin_reject_new_reader(req, book_club_name):
             )
             notification.save()
 
-            return redirect('book_club:book_club_admin_membership_requests', book_club_name=book_club_name)
+            return redirect('book_club:book_club_admin_membership_requests', book_club_name=d_book_club_name)
         else:
             return redirect('home')
 
@@ -505,9 +532,12 @@ def book_club_admin_disband(req, book_club_name):
     Disband a book club (soft delete)
     """
 
+    # Decode book_club_name
+    d_book_club_name = unquote(book_club_name)
+
     # Get the book club from the DB
     # TODO - Only creators should be able to disband groups
-    book_club = __get_admin_club_or_none(book_club_name, req.user.id)
+    book_club = __get_admin_club_or_none(d_book_club_name, req.user.id)
 
     # If not an admin, redirect to home
     # TODO - Redirect to current page
