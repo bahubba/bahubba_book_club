@@ -11,31 +11,31 @@
         <div class="col-md-2 border-end">
             <div class="list-group list-group-flush">
                 <a
-                    href="{% url 'book_club:book_club_admin' book_club.name|slugify %}"
+                    href="{% url 'book_club:book_club_admin:book_club_admin' book_club.name|slugify %}"
                     class="list-group-item {% if section == 'details' %} bg-secondary {% endif %}"
                 >
                     Details
                 </a>
                 <a
-                    href="{% url 'book_club:book_club_admin_members' book_club.name|slugify %}"
+                    href="{% url 'book_club:book_club_admin:book_club_admin_members' book_club.name|slugify %}"
                     class="list-group-item {% if section == 'members' %} bg-secondary {% endif %}"
                 >
                     Members
                 </a>
                 <a
-                    href="{% url 'book_club:book_club_admin_membership_requests' book_club.name|slugify %}"
+                    href="{% url 'book_club:book_club_admin:book_club_admin_membership_requests' book_club.name|slugify %}"
                     class="list-group-item {% if section == 'membership_requests' %} bg-secondary {% endif %}"
                 >
                     Membership Requests
                 </a>
                 <a
-                    href="{% url 'book_club:book_club_admin_prefs' book_club.name|slugify %}"
+                    href="{% url 'book_club:book_club_admin:book_club_admin_prefs' book_club.name|slugify %}"
                     class="list-group-item {% if section == 'prefs' %} bg-secondary {% endif %}"
                 >
                     Preferences
                 </a>
                 <a
-                    href="{% url 'book_club:book_club_admin_disband' book_club.name|slugify %}"
+                    href="{% url 'book_club:book_club_admin:book_club_admin_disband' book_club.name|slugify %}"
                     class="btn btn-sm btn-danger mt-2 mx-4"
                 >
                     Disband
