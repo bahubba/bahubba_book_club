@@ -18,7 +18,7 @@
                 <div class="col-4">
                     <form
                         method="POST"
-                        action="{% url 'book_club:book_club_admin_change_role' book_club.name|slugify %}"
+                        action="{% url 'book_club:book_club_admin:book_club_admin_change_role' book_club.name|slugify %}"
                     >
                         <input type="hidden" disabled value="{{ book_club.id }}" />
                         <input type="hidden" disabled value="{{ reader_role.reader.id }}" />
@@ -42,7 +42,7 @@
                 <div class="col-1">
                     {# TODO - change this to a form and submit button with POST type #}
                     <button
-                        onclick="location.href='{% url 'book_club:book_club_admin_remove_reader' book_club.name|slugify %}'"
+                        onclick="location.href='{% url 'book_club:book_club_admin:book_club_admin_remove_reader' book_club.name|slugify %}'"
                         class="btn btn-danger"
                         {% if reader_role.is_creator %}disabled{% endif %}
                     >
